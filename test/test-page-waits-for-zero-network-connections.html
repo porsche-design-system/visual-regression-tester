@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2 id="demo">Porsche (wait for network connection)</h2>
+
+<script>
+  var interval = setInterval(loadDoc, 2000);
+  var i = 1;
+
+  setTimeout(function() {
+    clearInterval(interval);
+  }, 6001);
+
+  function loadDoc() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("demo").innerHTML =
+          this.responseText + ' ('+ i++ +'. network connection)';
+      }
+    };
+    xhttp.open("GET", "porsche.txt", true);
+    xhttp.send();
+  }
+</script>
+
+</body>
+</html>

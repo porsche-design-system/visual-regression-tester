@@ -1,0 +1,11 @@
+.nyc_output/
+coverage/
+node_modules/
+.idea/
+.vscode/
+lib/
+test/
+src/
+examples/
+.editorconfig
+tsconfig.json
