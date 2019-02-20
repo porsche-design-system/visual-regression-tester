@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.1] - 2019-02-20
-- add page.type function and make waitForNetworkIdle public
+## [1.1.0] - 2019-02-20
+- Add type() method 
+- Make waitForNetworkIdle() a public method
 
 ## [1.0.0] - 2019-01-15
 - First stable version of visual-regression-tester

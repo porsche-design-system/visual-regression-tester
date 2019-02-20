@@ -5,7 +5,7 @@
     "upgrade-interactive": "npm-check --update"
   },
   "dependencies": {
-    "@porsche/visual-regression-tester": "^1.0.0",
+    "@porscheui/visual-regression-tester": "^1.0.0",
     "http-server": "^0.11.1",
     "jasmine": "^3.3.1",
     "puppeteer": "^1.9.0",

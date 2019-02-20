@@ -5,11 +5,11 @@ __It's highly recommended to execute the visual regression tester within a Docke
 
 ## Installation
 * Be sure that your project is configured to be able to install npm packages from Porsche UI Artifactory instance
-* run `npm install --save-dev @porsche/visual-regression-tester` or `yarn add --dev @porsche/visual-regression-tester`
+* run `npm install --save-dev @porscheui/visual-regression-tester` or `yarn add --dev @porscheui/visual-regression-tester`
 
 ## How to start
 
-Check out the [Basic integration example](https://github.com/myporsche/myservices-visual-regression-tester/tree/master/examples/basic-integration) for an example how to get the visual regression tester up and running.
+Check out the [Basic integration example](https://github.com/porscheui/porsche-visual-regression-tester/tree/master/examples/basic-integration) for an example how to get the visual regression tester up and running.
 
 ## API
 
@@ -19,7 +19,7 @@ The constructor expects 2 parameters:
 * `browser: Browser`
 * `options: VisualRegressionTestOptions` (_optional_)
 
-Browser should be a [Puppeteer Browser instance](https://github.com/GoogleChrome/puppeteer/blob/v1.9.0/docs/api.md#class-browser). Check the basic integration example for [how to create a Puppeteer browser](https://github.com/myporsche/myservices-visual-regression-tester/blob/master/examples/basic-integration/vrt/example-test.spec.ts#L19).
+Browser should be a [Puppeteer Browser instance](https://github.com/GoogleChrome/puppeteer/blob/v1.9.0/docs/api.md#class-browser). Check the basic integration example for [how to create a Puppeteer browser](https://github.com/porscheui/porsche-visual-regression-tester/blob/master/examples/basic-integration/vrt/example-test.spec.ts#L19).
 
 #### test() Method
 In the actual visual regression test you have to call the `test(snapshotId: string, scenario: Function, maskSelectors: string[] = [])`-method in your expect block, 
