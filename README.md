@@ -25,12 +25,12 @@ Browser should be a [Puppeteer Browser instance](https://github.com/GoogleChrome
 In the actual visual regression test you have to call the `test(snapshotId: string, scenario: Function, maskSelectors: string[] = [])`-method in your expect block, 
 taken an unique name of the reference shot as **first parameter** (`snapshotId: string`). 
   
-As **second parameter** (`scenario: Function`) within the scenario callback function you call the `goTo()` method with the extended URL (will be concatinated with the `baseURL`), as well as `click()`, `hover()` and `focus()` if necessary and prepare the state to compare.  
-`goTo()`, `click()`, `hover()` and `focus()` method accept following optional parameters `networkIdleTimeout: number` and `maxInflightRequests: number` which means, — consider loading has finished when there are no more than `maxInflightRequests` network connections for at least `networkIdleTimeout` ms.
+As **second parameter** (`scenario: Function`) within the scenario callback function you call the `goTo()` method with the extended URL (will be concatinated with the `baseURL`), as well as `click()`, `hover()`, `focus()` and `type()` if necessary and prepare the state to compare.  
+`goTo()`, `click()`, `hover()`, `focus()` and `type()` method accept following optional parameters `networkIdleTimeout: number` and `maxInflightRequests: number` which means, — consider loading has finished when there are no more than `maxInflightRequests` network connections for at least `networkIdleTimeout` ms.
 
 As a **third and optional parameter** (`maskSelectors: string[] = []`) you can pass a string array which includes css selectors for the elements that should be ignored in your visual regression test.
 
-To make use of Puppeteers Page instance within the `scenario: Function` you call the `getPage()` method and apply any supported Puppeteer method like `click()` or `hover()`.
+To make use of Puppeteers Page instance within the `scenario: Function` you call the `getPage()` method and apply any supported Puppeteer method like `click()`, `hover()` or `type()`.
 
 ### VisualRegressionTestOptions
 
