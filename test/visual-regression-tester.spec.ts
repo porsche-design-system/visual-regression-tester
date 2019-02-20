@@ -66,6 +66,13 @@ describe('Visual-Regression-Test Tester', () => {
         await visualRegressionTester.focus('button');
       })).toBeFalsy();
     });
+
+    it('should wait for page interaction "type" before comparing snapshots', async () => {
+      expect(await visualRegressionTester.test('test-page-waits-for-user-interaction-type', async () => {
+        await visualRegressionTester.goTo('/test-page-waits-for-user-interaction.html');
+        await visualRegressionTester.type('input', 'car');
+      })).toBeFalsy();
+    });
   });
 
   describe('network idle', () => {
@@ -100,6 +107,14 @@ describe('Visual-Regression-Test Tester', () => {
       expect(await visualRegressionTester.test('test-page-waits-for-user-interaction-and-network-requests-focus', async () => {
         await visualRegressionTester.goTo('/test-page-waits-for-user-interaction-and-network-requests.html');
         await visualRegressionTester.focus('button', 2000);
+      })).toBeFalsy();
+    });
+
+    it('should wait for page interaction "type" and network requests (polling) before comparing snapshots', async () => {
+      expect(await visualRegressionTester.test('test-page-waits-for-user-interaction-and-network-requests-type',
+        async () => {
+        await visualRegressionTester.goTo('/test-page-waits-for-user-interaction-and-network-requests.html');
+        await visualRegressionTester.type('input', 'c', 2000);
       })).toBeFalsy();
     });
   });

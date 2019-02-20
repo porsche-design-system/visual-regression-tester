@@ -54,6 +54,13 @@ export class VisualRegressionTester {
     ]);
   }
 
+  async type(selector: string, input: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
+    await Promise.all([
+      this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests),
+      this.page.type(selector, input)
+    ]);
+  }
+
   async hover(selector: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
     await Promise.all([
       this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests),
@@ -99,7 +106,7 @@ export class VisualRegressionTester {
     return error;
   }
 
-  private waitForNetworkIdle(timeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
+  public waitForNetworkIdle(timeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
     const onRequestStarted = () => {
       ++inflight;
       if (inflight > maxInflightRequests) clearTimeout(timeoutId);

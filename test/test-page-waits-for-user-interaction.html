@@ -9,6 +9,8 @@
 
 <button type="button" onclick="buttonIsClicked()" onmouseover="buttonIsHovered()" onfocus="buttonIsFocused()">Click Me!</button>
 
+<input type="text" oninput="inputIsFilled()" >
+
 <script>
   function buttonIsClicked() {
     document.getElementById('demo').innerHTML = 'Button was clicked';
@@ -20,6 +22,10 @@
 
   function buttonIsFocused() {
     document.getElementById('demo').innerHTML = 'Button was focused';
+  }
+
+  function inputIsFilled() {
+    document.getElementById('demo').innerHTML = 'Input was filled';
   }
 </script>
 

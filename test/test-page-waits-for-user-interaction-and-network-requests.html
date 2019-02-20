@@ -10,6 +10,7 @@
 <p id="doc">Waiting for document to be loaded async…</p>
 
 <button type="button" onclick="buttonIsClicked()" onmouseover="buttonIsHovered()" onfocus="buttonIsFocused()">Click Me!</button>
+<input type="text" oninput="inputIsFilled()" >
 
 <script>
   function loadDoc(i) {
@@ -46,6 +47,16 @@
 
   function buttonIsFocused() {
     document.getElementById('demo').innerHTML = 'Button was focused';
+
+    var i = 0;
+    var interval = setInterval(function() { loadDoc(++i) }, 1000);
+    setTimeout(function() {
+      clearInterval(interval);
+    }, 3001);
+  }
+
+  function inputIsFilled() {
+    document.getElementById('demo').innerHTML = 'Input was filled';
 
     var i = 0;
     var interval = setInterval(function() { loadDoc(++i) }, 1000);
