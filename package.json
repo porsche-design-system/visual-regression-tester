@@ -9,11 +9,11 @@
     "start-test-server": "http-server ./test -p 61423",
     "test": "ts-node --project test/tsconfig.json node_modules/jasmine/bin/jasmine --config=test/jasmine.config.json",
     "authenticate-registry": "(npm whoami --registry=$npm_config_repository_url || npm login --registry=$npm_config_repository_url)",
-    "publish": "npm run build && npm run test && npm run authenticate-registry --repository_url=$npm_package_publishConfig__porsche_registry",
+    "publish": "npm run build && npm run test && npm run authenticate-registry --repository_url=$npm_package_publishConfig__porscheui_registry",
     "upgrade-interactive": "npm-check --update"
   },
   "publishConfig": {
-    "@porsche:registry": "https://porscheui.jfrog.io/porscheui/api/npm/npm-local/"
+    "@porscheui:registry": "https://porscheui.jfrog.io/porscheui/api/npm/npm-local/"
   },
   "repository": {
     "type": "git",
