@@ -1,4 +1,4 @@
-# myservices-visual-regression-tester
+# @porscheui/visual-regression-tester
 A NPM package that exports functions to create visual regression tests
 
 __It's highly recommended to execute the visual regression tester within a Docker container to get reliable tests results across any operating system and machine.__
