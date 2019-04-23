@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2019-04-23
+- Add timeout parameter to configuration object 
+
 ## [1.1.0] - 2019-02-20
 - Add type() method 
 - Make waitForNetworkIdle() a public method
