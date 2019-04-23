@@ -1,6 +1,6 @@
 {
   "name": "@porscheui/visual-regression-tester",
-  "version": "1.1.1",
+  "version": "1.1.0",
   "description": "A NPM package that exports functions to create visual regression tests",
   "main": "dist/visual-regression-tester.js",
   "types": "dist/visual-regression-tester.d.ts",

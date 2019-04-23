@@ -9,6 +9,7 @@ export interface VisualRegressionTestOptions {
   resultsDir?: string;
   tolerance?: number;
   baseUrl?: string;
+  timeout?: number;
 }
 
 export class VisualRegressionTester {
@@ -18,7 +19,8 @@ export class VisualRegressionTester {
     fixturesDir: 'vrt/fixtures',
     resultsDir: 'vrt/results',
     tolerance: 0,
-    baseUrl: 'http://localhost'
+    baseUrl: 'http://localhost',
+    timeout: 30000
   };
   private page: Page;
 
@@ -78,11 +80,9 @@ export class VisualRegressionTester {
         diff: `${this.options.resultsDir}/${snapshotId}.${viewport}.diff.png`
       };
 
-      this.page = await this.browser.newPage();
+      this.page = await this.newPage(viewport);
 
       await this.cleanSnapshots([paths.regression, paths.diff]);
-
-      await this.page.setViewport({width: viewport, height: 1});
 
       await scenario();
 
@@ -134,6 +134,14 @@ export class VisualRegressionTester {
     this.page.on('requestfailed', onRequestFinished);
 
     return new Promise(x => fulfill = x);
+  }
+
+  private async newPage(viewport: number): Promise<Page> {
+    const page = await this.browser.newPage();
+    await page.setDefaultNavigationTimeout(this.options.timeout);
+    await page.setViewport({width: viewport, height: 1});
+
+    return page;
   }
 
   private async createSnapshot(maskSelectors: string[]): Promise<Jimp> {

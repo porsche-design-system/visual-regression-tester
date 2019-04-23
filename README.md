@@ -39,6 +39,7 @@ To make use of Puppeteers Page instance within the `scenario: Function` you call
    * `resultsDir` directory where the diffing- and the regression-shots will be saved  
    * `tolerance` gives the tolerance range for your visual regression diffs  
    * `baseUrl` the base URL of the page you would like to test  
+   * `timeout` impacts the timeout limit of page load  
              
 *Note*: All the VisualRegressionTestOptions are optional, those are the default options:
    ```
@@ -47,6 +48,7 @@ To make use of Puppeteers Page instance within the `scenario: Function` you call
    resultsDir: 'vrt/results'
    tolerance: 0
    baseUrl: 'http://localhost'
+   timeout: 30000
    ```
 
 ## Notes:
