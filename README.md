@@ -1,11 +1,11 @@
-# @porscheui/visual-regression-tester
+# @porsche-ui/visual-regression-tester
 A NPM package that exports functions to create visual regression tests
 
 __It's highly recommended to execute the visual regression tester within a Docker container to get reliable tests results across any operating system and machine.__
 
 ## Installation
 * Be sure that your project is configured to be able to install npm packages from Porsche UI Artifactory instance
-* run `npm install --save-dev @porscheui/visual-regression-tester` or `yarn add --dev @porscheui/visual-regression-tester`
+* run `npm install --save-dev @porsche-ui/visual-regression-tester` or `yarn add --dev @porsche-ui/visual-regression-tester`
 
 ## How to start
 
