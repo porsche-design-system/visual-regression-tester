@@ -1,4 +1,4 @@
 # Example for basic integration of visual regression tester
-* run `npm i`
-* run `npm start` and keep it running
-* in another terminal run `npm run visual-regresison-tests`
+* run `yarn install`
+* run `yarn start` and keep it running
+* in another terminal run `yarn visual-regresison-tests`

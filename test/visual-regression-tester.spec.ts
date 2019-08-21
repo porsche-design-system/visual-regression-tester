@@ -1,6 +1,6 @@
 import 'jasmine';
-import { VisualRegressionTester } from '../src/visual-regression-tester';
-import { getVisualRegressionTester } from './helpers/setup';
+import {VisualRegressionTester} from '../src/visual-regression-tester';
+import {getVisualRegressionTester} from './helpers/setup';
 
 describe('Visual-Regression-Test Tester', () => {
   let visualRegressionTester: VisualRegressionTester;
@@ -25,23 +25,29 @@ describe('Visual-Regression-Test Tester', () => {
 
     expect(await visualRegressionTester.test('test-page-masked-original', async () => {
       await visualRegressionTester.goTo('/test-page-original.html');
-    }, ['.title'])).toBeFalsy();
+    }, '', ['.title'])).toBeFalsy();
 
     expect(await visualRegressionTester.test('test-page-masked-edited', async () => {
       await visualRegressionTester.goTo('/test-page-edited.html');
-    }, ['.title'])).toBeFalsy();
+    }, '', ['.title'])).toBeFalsy();
+  });
+
+  it('should have no visual regression for content within scrollable area and mask deeper nested elements', async () => {
+    expect(await visualRegressionTester.test('test-page-with-scroll-area', async () => {
+      await visualRegressionTester.goTo('/test-page-with-scroll-area.html');
+    }, '.scrollable > .content', ['.mask'])).toBeFalsy();
   });
 
   it('should mask elements with an extended mask to solve issues with sub pixel rendering', async () => {
     expect(await visualRegressionTester.test('test-page-extend-mask-bounding', async () => {
       await visualRegressionTester.goTo('/test-page-extend-mask-bounding.html');
-    }, ['.mask'])).toBeFalsy();
+    }, '', ['.mask'])).toBeFalsy();
   });
 
   it('should ignore mask selectors that are invisible without size definition', async () => {
     expect(await visualRegressionTester.test('test-page-ignores-invisible-mask-selectors', async () => {
       await visualRegressionTester.goTo('/test-page-ignores-invisible-mask-selectors.html');
-    }, ['.mask'])).toBeFalsy();
+    }, '', ['.mask'])).toBeFalsy();
   });
 
   describe('interaction', () => {
@@ -113,9 +119,9 @@ describe('Visual-Regression-Test Tester', () => {
     it('should wait for page interaction "type" and network requests (polling) before comparing snapshots', async () => {
       expect(await visualRegressionTester.test('test-page-waits-for-user-interaction-and-network-requests-type',
         async () => {
-        await visualRegressionTester.goTo('/test-page-waits-for-user-interaction-and-network-requests.html');
-        await visualRegressionTester.type('input', 'c', 2000);
-      })).toBeFalsy();
+          await visualRegressionTester.goTo('/test-page-waits-for-user-interaction-and-network-requests.html');
+          await visualRegressionTester.type('input', 'c', 2000);
+        })).toBeFalsy();
     });
   });
 });

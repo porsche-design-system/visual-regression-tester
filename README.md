@@ -28,7 +28,9 @@ taken an unique name of the reference shot as **first parameter** (`snapshotId: 
 As **second parameter** (`scenario: Function`) within the scenario callback function you call the `goTo()` method with the extended URL (will be concatinated with the `baseURL`), as well as `click()`, `hover()`, `focus()` and `type()` if necessary and prepare the state to compare.  
 `goTo()`, `click()`, `hover()`, `focus()` and `type()` method accept following optional parameters `networkIdleTimeout: number` and `maxInflightRequests: number` which means, — consider loading has finished when there are no more than `maxInflightRequests` network connections for at least `networkIdleTimeout` ms.
 
-As a **third and optional parameter** (`maskSelectors: string[] = []`) you can pass a string array which includes css selectors for the elements that should be ignored in your visual regression test.
+As a **third and optional parameter** (`elementSelector: string = ''`) you can pass a css selector for the element (selector is allowed to match exactly one element only) that should be included in your visual regression test.
+
+As a **fourth and optional parameter** (`maskSelectors: string[] = []`) you can pass a string array which includes css selectors for the elements that should be ignored in your visual regression test. If `maskSelectors` is used in combination with `elementSelector` then those two selectors are concatenated automatically to match elements nested in `elementSelector`.
 
 To make use of Puppeteers Page instance within the `scenario: Function` you call the `getPage()` method and apply any supported Puppeteer method like `click()`, `hover()` or `type()`.
 
@@ -40,6 +42,7 @@ To make use of Puppeteers Page instance within the `scenario: Function` you call
    * `tolerance` gives the tolerance range for your visual regression diffs  
    * `baseUrl` the base URL of the page you would like to test  
    * `timeout` impacts the timeout limit of page load  
+   * `mode` defines the method with which the height for snapshot is determined
              
 *Note*: All the VisualRegressionTestOptions are optional, those are the default options:
    ```
@@ -49,6 +52,7 @@ To make use of Puppeteers Page instance within the `scenario: Function` you call
    tolerance: 0
    baseUrl: 'http://localhost'
    timeout: 30000
+   mode: 'auto'
    ```
 
 ## Notes:
@@ -65,5 +69,5 @@ To make use of Puppeteers Page instance within the `scenario: Function` you call
   
 ## For developers
 ### Running tests
-* run `npm run start-test-server` and keep it running
-* in another terminal run `npm test`
+* run `yarn start-test-server` and keep it running
+* in another terminal run `yarn test`

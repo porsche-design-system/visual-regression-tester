@@ -1,7 +1,7 @@
 import * as Jimp from 'jimp/dist';
 import * as del from 'del';
 import * as fs from 'fs';
-import { BoundingBox, Browser, ClickOptions, ElementHandle, Page } from 'puppeteer';
+import {BoundingBox, Browser, ClickOptions, ElementHandle, Page} from 'puppeteer';
 
 export interface VisualRegressionTestOptions {
   viewports?: number[];
@@ -10,6 +10,7 @@ export interface VisualRegressionTestOptions {
   tolerance?: number;
   baseUrl?: string;
   timeout?: number;
+  mode?: 'auto' | 'square-auto';
 }
 
 export class VisualRegressionTester {
@@ -20,7 +21,8 @@ export class VisualRegressionTester {
     resultsDir: 'vrt/results',
     tolerance: 0,
     baseUrl: 'http://localhost',
-    timeout: 30000
+    timeout: 30000,
+    mode: 'auto'
   };
   private page: Page;
 
@@ -70,7 +72,7 @@ export class VisualRegressionTester {
     ]);
   }
 
-  async test(snapshotId: string, scenario: Function, maskSelectors: string[] = []): Promise<boolean> {
+  async test(snapshotId: string, scenario: Function, elementSelector: string = '', maskSelectors: string[] = []): Promise<boolean> {
     let error = false;
 
     for (const viewport of this.options.viewports) {
@@ -88,7 +90,7 @@ export class VisualRegressionTester {
 
       if (fs.existsSync(paths.reference)) {
         const reference = await Jimp.read(paths.reference);
-        const regression = await this.compareSnapshots(reference, maskSelectors);
+        const regression = await this.compareSnapshots(reference, elementSelector, maskSelectors);
 
         if (regression) {
           error = true;
@@ -96,7 +98,7 @@ export class VisualRegressionTester {
           await regression.diff.write(paths.diff);
         }
       } else {
-        const reference = await this.createSnapshot(maskSelectors);
+        const reference = await this.createSnapshot(elementSelector, maskSelectors);
         await reference.write(paths.reference);
       }
 
@@ -139,27 +141,34 @@ export class VisualRegressionTester {
   private async newPage(viewport: number): Promise<Page> {
     const page = await this.browser.newPage();
     await page.setDefaultNavigationTimeout(this.options.timeout);
-    await page.setViewport({width: viewport, height: 1});
+    await page.setViewport({width: viewport, height: this.options.mode === 'square-auto' ? viewport : 1});
 
     return page;
   }
 
-  private async createSnapshot(maskSelectors: string[]): Promise<Jimp> {
-    const buffer = await this.page.screenshot({fullPage: true});
-    let image = await Jimp.read(buffer);
-    image = await this.maskSnapshot(image, maskSelectors);
+  private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
+    let buffer, image;
+
+    if (elementSelector) {
+      buffer = await (await this.page.$(elementSelector)).screenshot();
+    } else {
+      buffer = await this.page.screenshot({fullPage: true});
+    }
+
+    image = await Jimp.read(buffer);
+    image = await this.maskSnapshot(image, elementSelector, maskSelectors);
 
     return image;
   }
 
-  private async maskSnapshot(image: Jimp, selectors: string[]): Promise<Jimp> {
-    for (const selector of selectors) {
-      const elements = await this.page.$$(selector);
+  private async maskSnapshot(image: Jimp, elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
+    for (const maskSelector of maskSelectors) {
+      const elements = await this.page.$$(`${elementSelector} ${maskSelector}`);
 
       for (const element of elements) {
         const boundingBox = await this.getBoundingBox(element);
         if (boundingBox !== null) {
-          const { width, height, x, y } = boundingBox;
+          const {width, height, x, y} = boundingBox;
           const mask = await new Jimp(width, height, '#FF00FF');
 
           image = await image.composite(mask, x, y);
@@ -185,8 +194,8 @@ export class VisualRegressionTester {
     return null;
   }
 
-  private async compareSnapshots(reference: Jimp, maskSelectors: string[]): Promise<{ image: Jimp, diff: Jimp }> {
-    const image = await this.createSnapshot(maskSelectors);
+  private async compareSnapshots(reference: Jimp, elementSelector: string, maskSelectors: string[]): Promise<{ image: Jimp, diff: Jimp }> {
+    const image = await this.createSnapshot(elementSelector, maskSelectors);
     const diff = await Jimp.diff(reference, image, this.options.tolerance);
 
     if (diff.percent === 0) {
