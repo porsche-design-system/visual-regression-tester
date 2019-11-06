@@ -88,6 +88,9 @@ export class VisualRegressionTester {
 
       await scenario();
 
+      const height = await this.page.evaluate(() => document.body.clientHeight);
+      await this.page.setViewport({width: viewport, height: height});
+
       if (fs.existsSync(paths.reference)) {
         const reference = await Jimp.read(paths.reference);
         const regression = await this.compareSnapshots(reference, elementSelector, maskSelectors);

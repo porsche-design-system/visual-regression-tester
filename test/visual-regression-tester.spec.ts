@@ -50,6 +50,12 @@ describe('Visual-Regression-Test Tester', () => {
     }, '', ['.mask'])).toBeFalsy();
   });
 
+  it('should properly overlays with fixed position', async () => {
+    expect(await visualRegressionTester.test('test-page-with-fixed-positioning', async () => {
+      await visualRegressionTester.goTo('/test-page-with-fixed-positioning.html');
+    }, '', ['.modal'])).toBeFalsy();
+  });
+
   describe('interaction', () => {
 
     it('should wait for page interaction "click" before comparing snapshots', async () => {
