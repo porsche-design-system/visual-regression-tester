@@ -1,7 +1,7 @@
 import * as Jimp from 'jimp/dist';
 import * as del from 'del';
 import * as fs from 'fs';
-import {BoundingBox, Browser, ClickOptions, ElementHandle, Page} from 'puppeteer';
+import { BoundingBox, Browser, ClickOptions, ElementHandle, LoadEvent, Page } from 'puppeteer';
 
 export interface VisualRegressionTestOptions {
   viewports?: number[];
@@ -11,6 +11,7 @@ export interface VisualRegressionTestOptions {
   baseUrl?: string;
   timeout?: number;
   mode?: 'auto' | 'square-auto';
+  waitUntilMethod?: LoadEvent;
 }
 
 export class VisualRegressionTester {
@@ -22,7 +23,8 @@ export class VisualRegressionTester {
     tolerance: 0,
     baseUrl: 'http://localhost',
     timeout: 30000,
-    mode: 'auto'
+    mode: 'auto',
+    waitUntilMethod: 'networkidle0'
   };
   private page: Page;
 
@@ -40,7 +42,7 @@ export class VisualRegressionTester {
   async goTo(url: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
     await Promise.all([
       this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests),
-      this.page.goto(`${this.options.baseUrl}${url}`, {waitUntil: 'networkidle0'})
+      this.page.goto(`${this.options.baseUrl}${url}`, {waitUntil: this.options.waitUntilMethod})
     ]);
   }
 
