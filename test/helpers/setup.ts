@@ -5,6 +5,7 @@ import { VisualRegressionTester, VisualRegressionTestOptions } from '../../src/v
 
 let browser: Browser;
 let visualRegressionTester: VisualRegressionTester;
+let visualRegressionRetinaTester: VisualRegressionTester;
 
 const testOptions: VisualRegressionTestOptions = {
   viewports: [320, 480, 760, 1000, 1300, 1760],
@@ -22,7 +23,7 @@ afterAll(async () => {
   }
 });
 
-export async function getVisualRegressionTester(): Promise<VisualRegressionTester> {
+export const getVisualRegressionTester = async (): Promise<VisualRegressionTester> => {
   if (!visualRegressionTester) {
     browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -31,4 +32,15 @@ export async function getVisualRegressionTester(): Promise<VisualRegressionTeste
   }
 
   return visualRegressionTester;
+}
+
+export const getVisualRegressionRetinaTester = async (): Promise<VisualRegressionTester> => {
+  if (!visualRegressionRetinaTester) {
+    browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    visualRegressionRetinaTester = new VisualRegressionTester(browser, {...testOptions, viewports: [320, 350], deviceScaleFactor: 2});
+  }
+
+  return visualRegressionRetinaTester;
 }

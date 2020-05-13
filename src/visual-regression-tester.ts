@@ -5,12 +5,13 @@ import { BoundingBox, Browser, ClickOptions, ElementHandle, LoadEvent, Page } fr
 
 export interface VisualRegressionTestOptions {
   viewports?: number[];
+  deviceScaleFactor?: number;
   fixturesDir?: string;
   resultsDir?: string;
   tolerance?: number;
   baseUrl?: string;
   timeout?: number;
-  mode?: 'auto' | 'square-auto';
+  mode?: "auto" | "square-auto";
   waitUntilMethod?: LoadEvent;
 }
 
@@ -18,6 +19,7 @@ export class VisualRegressionTester {
 
   private options: VisualRegressionTestOptions = {
     viewports: [320, 480, 760, 1000, 1300, 1760],
+    deviceScaleFactor: 1,
     fixturesDir: 'vrt/fixtures',
     resultsDir: 'vrt/results',
     tolerance: 0,
@@ -91,7 +93,7 @@ export class VisualRegressionTester {
       await scenario();
 
       const height = await this.page.evaluate(() => document.body.clientHeight);
-      await this.page.setViewport({width: viewport, height: height});
+      await this.page.setViewport({width: viewport, height: height, deviceScaleFactor: this.options.deviceScaleFactor });
 
       if (fs.existsSync(paths.reference)) {
         const reference = await Jimp.read(paths.reference);
@@ -145,7 +147,7 @@ export class VisualRegressionTester {
 
   private async newPage(viewport: number): Promise<Page> {
     const page = await this.browser.newPage();
-    await page.setDefaultNavigationTimeout(this.options.timeout);
+    page.setDefaultNavigationTimeout(this.options.timeout);
     await page.setViewport({width: viewport, height: this.options.mode === 'square-auto' ? viewport : 1});
 
     return page;

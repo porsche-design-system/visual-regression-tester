@@ -37,6 +37,7 @@ To make use of Puppeteers Page instance within the `scenario: Function` you call
 ### VisualRegressionTestOptions
 
    * `viewports` selects the viewports of your browser  
+   * `deviceScaleFactor` specify device scale factor (can be thought of as dpr)
    * `fixturesDir` directory where the reference-shots will be saved  
    * `resultsDir` directory where the diffing- and the regression-shots will be saved  
    * `tolerance` gives the tolerance range for your visual regression diffs  
@@ -47,6 +48,7 @@ To make use of Puppeteers Page instance within the `scenario: Function` you call
 *Note*: All the VisualRegressionTestOptions are optional, those are the default options:
    ```
    viewports: [320, 480, 760, 1000, 1300, 1760]
+   deviceScaleFactor: 1
    fixturesDir: 'vrt/fixtures'
    resultsDir: 'vrt/results'
    tolerance: 0
