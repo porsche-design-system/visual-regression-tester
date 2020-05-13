@@ -1,6 +1,6 @@
 import 'jasmine';
 import {VisualRegressionTester} from '../src/visual-regression-tester';
-import {getVisualRegressionTester} from './helpers/setup';
+import {getVisualRegressionTester, getVisualRegressionRetinaTester} from './helpers/setup';
 
 describe('Visual-Regression-Test Tester', () => {
   let visualRegressionTester: VisualRegressionTester;
@@ -129,5 +129,20 @@ describe('Visual-Regression-Test Tester', () => {
           await visualRegressionTester.type('input', 'c', 2000);
         })).toBeFalsy();
     });
+  });
+});
+
+
+describe('Visual-Regression-Test Retina Tester', () => {
+  let vrt: VisualRegressionTester;
+
+  beforeAll(async () => {
+    vrt = await getVisualRegressionRetinaTester();
+  });
+
+  it('should have no visual regression for test page', async () => {
+    expect(await vrt.test('test-page-unmasked-original-retina', async () => {
+      await vrt.goTo('/test-page-original.html');
+    })).toBeFalsy();
   });
 });
