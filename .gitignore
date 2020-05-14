@@ -64,7 +64,8 @@ typings/
 .idea/
 .vscode/
 lib/
-/test/results/
+/tests/results/
 /dist
 
 .DS_Store
+Thumbs.db

@@ -6,11 +6,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.2] - 2019-11-19
-- Add `waitUntilMethod` param to tester to configure puppeteer waitUntil while loading pages 
-
-## [1.0.1] - 2019-11-06
-- Fix position-fixed-issue 
-
-## [1.0.0] - 2019-08-21
+## [1.0.0] - 2020-05-14
 - Initial release

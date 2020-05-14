@@ -1,7 +1,7 @@
 import 'jasmine';
 import * as puppeteer from 'puppeteer';
 import { Browser } from 'puppeteer';
-import { VisualRegressionTester, VisualRegressionTestOptions } from '@porsche-ui/visual-regression-tester';
+import { VisualRegressionTester, VisualRegressionTestOptions } from '@porsche-design-system/visual-regression-tester';
 
 describe('Example integration of visual regression tester', () => {
   let browser: Browser, visualRegressionTester: VisualRegressionTester;
