@@ -37,23 +37,22 @@
     "test": "concurrently -k -s \"first\" -n \"server,test\" \"yarn start\" \"wait-on -t 180000 http-get://localhost:61423 && ts-node --project 'tests/config/tsconfig.json' node_modules/.bin/jasmine --config='tests/config/jasmine.config.json'\""
   },
   "dependencies": {
-    "del": "^3.0.0",
-    "jimp": "^0.6.0",
-    "puppeteer": "^1.11.0"
+    "del": "^5.1.0",
+    "jimp": "^0.10.3",
+    "puppeteer": "^3.0.4"
   },
   "devDependencies": {
-    "@types/del": "^3.0.1",
-    "@types/jasmine": "^3.3.1",
-    "@types/jasminewd2": "^2.0.6",
-    "@types/puppeteer": "^1.11.1",
+    "@types/del": "^4.0.0",
+    "@types/jasmine": "^3.5.10",
+    "@types/jasminewd2": "^2.0.8",
+    "@types/puppeteer": "^2.1.0",
     "concurrently": "^5.2.0",
-    "http-server": "^0.11.1",
-    "jasmine": "^3.3.1",
-    "jasmine-core": "^3.3.0",
-    "jasmine-spec-reporter": "~4.2.1",
-    "npm-check": "^5.9.0",
-    "ts-node": "^7.0.1",
-    "typescript": "^3.2.1",
+    "http-server": "^0.12.3",
+    "jasmine": "^3.5.0",
+    "jasmine-core": "^3.5.0",
+    "jasmine-spec-reporter": "~5.0.2",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.9.2",
     "wait-on": "^5.0.0"
   }
 }
