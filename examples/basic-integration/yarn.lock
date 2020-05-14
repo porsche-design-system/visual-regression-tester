@@ -262,9 +262,9 @@
   dependencies:
     core-js "^2.5.7"
 
-"@porsche-ui/visual-regression-tester@^1.0.0":
+"@porsche-design-system/visual-regression-tester@^1.0.0":
   version "1.0.0"
-  resolved "https://porscheui.jfrog.io/porscheui/api/npm/npm/@porsche-ui/visual-regression-tester/-/@porsche-ui/visual-regression-tester-1.0.0.tgz#f74d3172ea60ca90715dacaf39876ea684dbed56"
+  resolved "https://porscheui.jfrog.io/porscheui/api/npm/npm/@porsche-design-system/visual-regression-tester/-/@porsche-design-system/visual-regression-tester-1.0.0.tgz#f74d3172ea60ca90715dacaf39876ea684dbed56"
   integrity sha1-900xcupgypBxXayvOYdupoTb7VY=
   dependencies:
     del "^3.0.0"

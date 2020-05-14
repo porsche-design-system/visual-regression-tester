@@ -105,21 +105,22 @@ describe('Visual-Regression-Test Tester', () => {
       expect(await visualRegressionTester.test('test-page-waits-for-user-interaction-and-network-requests-click', async () => {
         await visualRegressionTester.goTo('/test-page-waits-for-user-interaction-and-network-requests.html');
         await visualRegressionTester.click('button', 2000);
-      })).toBeFalsy();
+      }, '', ['button'])).toBeFalsy();
     });
 
     it('should wait for page interaction "hover" and network requests (polling) before comparing snapshots', async () => {
       expect(await visualRegressionTester.test('test-page-waits-for-user-interaction-and-network-requests-hover', async () => {
         await visualRegressionTester.goTo('/test-page-waits-for-user-interaction-and-network-requests.html');
         await visualRegressionTester.hover('button', 2000);
-      })).toBeFalsy();
+        await visualRegressionTester.getPage().waitFor(100);
+      }, '', ['button'])).toBeFalsy();
     });
 
     it('should wait for page interaction "focus" and network requests (polling) before comparing snapshots', async () => {
       expect(await visualRegressionTester.test('test-page-waits-for-user-interaction-and-network-requests-focus', async () => {
         await visualRegressionTester.goTo('/test-page-waits-for-user-interaction-and-network-requests.html');
         await visualRegressionTester.focus('button', 2000);
-      })).toBeFalsy();
+      }, '', ['button'])).toBeFalsy();
     });
 
     it('should wait for page interaction "type" and network requests (polling) before comparing snapshots', async () => {
