@@ -148,7 +148,11 @@ export class VisualRegressionTester {
   private async newPage(viewport: number): Promise<Page> {
     const page = await this.browser.newPage();
     page.setDefaultNavigationTimeout(this.options.timeout);
-    await page.setViewport({width: viewport, height: this.options.mode === 'square-auto' ? viewport : 1});
+    await page.setViewport({
+      width: viewport,
+      height: this.options.mode === 'square-auto' ? viewport : 1,
+      deviceScaleFactor: this.options.deviceScaleFactor
+    });
 
     return page;
   }
