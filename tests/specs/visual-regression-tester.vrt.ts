@@ -1,6 +1,6 @@
 import 'jasmine';
-import {VisualRegressionTester} from '../src/visual-regression-tester';
-import {getVisualRegressionTester, getVisualRegressionRetinaTester} from './helpers/setup';
+import {VisualRegressionTester} from '../../src/visual-regression-tester';
+import {getVisualRegressionTester, getVisualRegressionRetinaTester} from '../helpers/setup';
 
 describe('Visual-Regression-Test Tester', () => {
   let visualRegressionTester: VisualRegressionTester;

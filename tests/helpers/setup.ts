@@ -9,8 +9,8 @@ let visualRegressionRetinaTester: VisualRegressionTester;
 
 const testOptions: VisualRegressionTestOptions = {
   viewports: [320, 480, 760, 1000, 1300, 1760],
-  fixturesDir: 'test/fixtures',
-  resultsDir: 'test/results',
+  fixturesDir: 'tests/fixtures',
+  resultsDir: 'tests/results',
   tolerance: 0,
   baseUrl: 'http://localhost:61423'
 };
