@@ -16,7 +16,6 @@ export interface VisualRegressionTestOptions {
 }
 
 export class VisualRegressionTester {
-
   private options: VisualRegressionTestOptions = {
     viewports: [320, 480, 760, 1000, 1300, 1760],
     deviceScaleFactor: 1,
@@ -101,12 +100,12 @@ export class VisualRegressionTester {
 
         if (regression) {
           error = true;
-          await regression.image.write(paths.regression);
-          await regression.diff.write(paths.diff);
+          regression.image.write(paths.regression);
+          regression.diff.write(paths.diff);
         }
       } else {
         const reference = await this.createSnapshot(elementSelector, maskSelectors);
-        await reference.write(paths.reference);
+        reference.write(paths.reference);
       }
 
       await this.page.close();
@@ -118,13 +117,19 @@ export class VisualRegressionTester {
   public waitForNetworkIdle(timeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
     const onRequestStarted = () => {
       ++inflight;
-      if (inflight > maxInflightRequests) clearTimeout(timeoutId);
+      if (inflight > maxInflightRequests) {
+        clearTimeout(timeoutId);
+      }
     };
 
     const onRequestFinished = () => {
-      if (inflight === 0) return;
+      if (inflight === 0) {
+        return
+      };
       --inflight;
-      if (inflight === maxInflightRequests) timeoutId = setTimeout(onTimeoutDone, timeout);
+      if (inflight === maxInflightRequests) {
+        timeoutId = setTimeout(onTimeoutDone, timeout);
+      }
     };
 
     const onTimeoutDone = () => {
@@ -135,7 +140,7 @@ export class VisualRegressionTester {
     };
 
     let inflight = 0;
-    let fulfill;
+    let fulfill: (value?: void | PromiseLike<void>) => void;
     let timeoutId = setTimeout(onTimeoutDone, timeout);
 
     this.page.on('request', onRequestStarted);
@@ -180,9 +185,9 @@ export class VisualRegressionTester {
         const boundingBox = await this.getBoundingBox(element);
         if (boundingBox !== null) {
           const {width, height, x, y} = boundingBox;
-          const mask = await new Jimp(width, height, '#FF00FF');
+          const mask = new Jimp(width, height, '#FF00FF');
 
-          image = await image.composite(mask, x, y);
+          image = image.composite(mask, x, y);
         }
       }
     }
@@ -207,7 +212,7 @@ export class VisualRegressionTester {
 
   private async compareSnapshots(reference: Jimp, elementSelector: string, maskSelectors: string[]): Promise<{ image: Jimp, diff: Jimp }> {
     const image = await this.createSnapshot(elementSelector, maskSelectors);
-    const diff = await Jimp.diff(reference, image, this.options.tolerance);
+    const diff = Jimp.diff(reference, image, this.options.tolerance);
 
     if (diff.percent === 0) {
       return null;
