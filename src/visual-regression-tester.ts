@@ -75,14 +75,14 @@ export class VisualRegressionTester {
     ]);
   }
 
-  async test(snapshotId: string, scenario: Function, elementSelector: string = '', maskSelectors: string[] = []): Promise<boolean> {
+  async test(snapshotId: string, scenario: Function, elementSelector: string = '', maskSelectors: string[] = [], opts?: { snapshotSuffix?: string }): Promise<boolean> {
     let error = false;
 
     for (const viewport of this.options.viewports) {
       const paths = {
         reference: `${this.options.fixturesDir}/${snapshotId}.${viewport}.png`,
-        regression: `${this.options.resultsDir}/${snapshotId}.${viewport}.png`,
-        diff: `${this.options.resultsDir}/${snapshotId}.${viewport}.diff.png`
+        regression: `${this.options.resultsDir}/${snapshotId}${opts?.snapshotSuffix ? `-${opts?.snapshotSuffix}` : ''}.${viewport}.png`,
+        diff: `${this.options.resultsDir}/${snapshotId}${opts?.snapshotSuffix ? `-${opts?.snapshotSuffix}` : ''}.${viewport}.diff.png`
       };
 
       this.page = await this.newPage(viewport);
@@ -167,7 +167,7 @@ export class VisualRegressionTester {
       ? (await this.page.$(elementSelector)).screenshot()
       : this.page.screenshot({fullPage: true}) as unknown as Promise<string>
     );
-    
+
     let image: Jimp;
     image = await Jimp.read(buffer);
     image = await this.maskSnapshot(image, elementSelector, maskSelectors);
