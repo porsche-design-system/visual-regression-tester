@@ -15,6 +15,12 @@ export interface VisualRegressionTestOptions {
   waitUntilMethod?: LoadEvent;
 }
 
+interface TestOptions {
+  elementSelector?: string;
+  maskSelectors?: string[];
+  regressionSuffix?: string;
+}
+
 export class VisualRegressionTester {
 
   private options: VisualRegressionTestOptions = {
@@ -76,14 +82,23 @@ export class VisualRegressionTester {
     ]);
   }
 
-  async test(snapshotId: string, scenario: Function, elementSelector: string = '', maskSelectors: string[] = []): Promise<boolean> {
+  async test(snapshotId: string, scenario: Function, options?: TestOptions): Promise<boolean> {
+
+    const opt: TestOptions = {
+      ...{
+        elementSelector: '',
+        maskSelectors: [],
+        regressionSuffix: ''
+      },
+      ...options
+    };
     let error = false;
 
     for (const viewport of this.options.viewports) {
       const paths = {
         reference: `${this.options.fixturesDir}/${snapshotId}.${viewport}.png`,
-        regression: `${this.options.resultsDir}/${snapshotId}.${viewport}.png`,
-        diff: `${this.options.resultsDir}/${snapshotId}.${viewport}.diff.png`
+        regression: `${this.options.resultsDir}/${snapshotId}${opt.regressionSuffix ? '.' + opt.regressionSuffix : ''}.${viewport}.png`,
+        diff: `${this.options.resultsDir}/${snapshotId}${opt.regressionSuffix ? '.' + opt.regressionSuffix : ''}.${viewport}.diff.png`
       };
 
       this.page = await this.newPage(viewport);
@@ -93,11 +108,11 @@ export class VisualRegressionTester {
       await scenario();
 
       const height = await this.page.evaluate(() => document.body.clientHeight);
-      await this.page.setViewport({width: viewport, height: height, deviceScaleFactor: this.options.deviceScaleFactor });
+      await this.page.setViewport({width: viewport, height: height, deviceScaleFactor: this.options.deviceScaleFactor});
 
       if (fs.existsSync(paths.reference)) {
         const reference = await Jimp.read(paths.reference);
-        const regression = await this.compareSnapshots(reference, elementSelector, maskSelectors);
+        const regression = await this.compareSnapshots(reference, opt.elementSelector, opt.maskSelectors);
 
         if (regression) {
           error = true;
@@ -105,7 +120,7 @@ export class VisualRegressionTester {
           await regression.diff.write(paths.diff);
         }
       } else {
-        const reference = await this.createSnapshot(elementSelector, maskSelectors);
+        const reference = await this.createSnapshot(opt.elementSelector, opt.maskSelectors);
         await reference.write(paths.reference);
       }
 

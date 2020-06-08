@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2020-06-08
+### Added
+- Extended `TestOptions` with `regressionSuffix`
+
+### Changed
+- Replaced `test()` function parameters with `TestOptions` object
+
 ## [1.0.1] - 2020-05-14
 - Fix support for deviceScaleFactor
 
