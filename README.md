@@ -68,15 +68,16 @@ The constructor expects 2 parameters:
 Browser should be a [Puppeteer Browser instance](https://github.com/GoogleChrome/puppeteer/blob/v1.9.0/docs/api.md#class-browser). Check the basic integration example for [how to create a Puppeteer browser](https://github.com/porscheui/porsche-visual-regression-tester/blob/master/examples/basic-integration/vrt/example-test.spec.ts#L19).
 
 #### test() Method
-In the actual visual regression test you have to call the `test(snapshotId: string, scenario: Function, maskSelectors: string[] = [])`-method in your expect block,
-taken an unique name of the reference shot as **first parameter** (`snapshotId: string`).
+In the actual visual regression test you have to call the `test(snapshotId: string, scenario: Function, options: TestOptions = {elementSelector: '', maskSelectors: [], regressionSuffix: ''})`-method in your expect block,
+taken a unique name of the reference shot as **first parameter** (`snapshotId: string`).
 
 As **second parameter** (`scenario: Function`) within the scenario callback function you call the `goTo()` method with the extended URL (will be concatinated with the `baseURL`), as well as `click()`, `hover()`, `focus()` and `type()` if necessary and prepare the state to compare.
 `goTo()`, `click()`, `hover()`, `focus()` and `type()` method accept following optional parameters `networkIdleTimeout: number` and `maxInflightRequests: number` which means, — consider loading has finished when there are no more than `maxInflightRequests` network connections for at least `networkIdleTimeout` ms.
 
-As a **third and optional parameter** (`elementSelector: string = ''`) you can pass a css selector for the element (selector is allowed to match exactly one element only) that should be included in your visual regression test.
-
-As a **fourth and optional parameter** (`maskSelectors: string[] = []`) you can pass a string array which includes css selectors for the elements that should be ignored in your visual regression test. If `maskSelectors` is used in combination with `elementSelector` then those two selectors are concatenated automatically to match elements nested in `elementSelector`.
+As a **third and optional parameter** (`options: TestOptions`) you can pass following options:
+* `elementSelector: string = ''` - pass a css selector for the element (selector is allowed to match exactly one element only) that should be included in your visual regression test.
+* `maskSelectors: string[] = []` - pass a string array which includes css selectors for the elements that should be ignored in your visual regression test. If `maskSelectors` is used in combination with `elementSelector` then those two selectors are concatenated automatically to match elements nested in `elementSelector`.
+* `regressionSuffix: string = ''` - pass a string to add a suffix in regression filenames
 
 To make use of Puppeteers Page instance within the `scenario: Function` you call the `getPage()` method and apply any supported Puppeteer method like `click()`, `hover()` or `type()`.
 

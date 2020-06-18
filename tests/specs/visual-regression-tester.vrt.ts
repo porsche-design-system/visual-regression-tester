@@ -25,35 +25,35 @@ describe('Visual-Regression-Test Tester', () => {
 
     expect(await visualRegressionTester.test('test-page-masked-original', async () => {
       await visualRegressionTester.goTo('/test-page-original.html');
-    }, '', ['.title'])).toBeFalsy();
+    }, {maskSelectors: ['.title']})).toBeFalsy();
 
     expect(await visualRegressionTester.test('test-page-masked-edited', async () => {
       await visualRegressionTester.goTo('/test-page-edited.html');
-    }, '', ['.title'])).toBeFalsy();
+    }, {maskSelectors: ['.title']})).toBeFalsy();
   });
 
   it('should have no visual regression for content within scrollable area and mask deeper nested elements', async () => {
     expect(await visualRegressionTester.test('test-page-with-scroll-area', async () => {
       await visualRegressionTester.goTo('/test-page-with-scroll-area.html');
-    }, '.scrollable > .content', ['.mask'])).toBeFalsy();
+    }, {elementSelector: '.scrollable > .content', maskSelectors: ['.mask']})).toBeFalsy();
   });
 
   it('should mask elements with an extended mask to solve issues with sub pixel rendering', async () => {
     expect(await visualRegressionTester.test('test-page-extend-mask-bounding', async () => {
       await visualRegressionTester.goTo('/test-page-extend-mask-bounding.html');
-    }, '', ['.mask'])).toBeFalsy();
+    }, {elementSelector: '', maskSelectors: ['.mask']})).toBeFalsy();
   });
 
   it('should ignore mask selectors that are invisible without size definition', async () => {
     expect(await visualRegressionTester.test('test-page-ignores-invisible-mask-selectors', async () => {
       await visualRegressionTester.goTo('/test-page-ignores-invisible-mask-selectors.html');
-    }, '', ['.mask'])).toBeFalsy();
+    }, {elementSelector: '', maskSelectors: ['.mask']})).toBeFalsy();
   });
 
   it('should properly overlays with fixed position', async () => {
     expect(await visualRegressionTester.test('test-page-with-fixed-positioning', async () => {
       await visualRegressionTester.goTo('/test-page-with-fixed-positioning.html');
-    }, '', ['.modal'])).toBeFalsy();
+    }, {elementSelector: '', maskSelectors: ['.modal']})).toBeFalsy();
   });
 
   describe('interaction', () => {
