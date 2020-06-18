@@ -82,13 +82,10 @@ export class VisualRegressionTester {
   }
 
   async test(snapshotId: string, scenario: Function, options?: TestOptions): Promise<boolean> {
-
-    const opt: TestOptions = {
-      ...{
-        elementSelector: '',
-        maskSelectors: [],
-        regressionSuffix: ''
-      },
+    const opts: TestOptions = {
+      elementSelector: '',
+      maskSelectors: [],
+      regressionSuffix: '',
       ...options
     };
     let error = false;
@@ -96,8 +93,8 @@ export class VisualRegressionTester {
     for (const viewport of this.options.viewports) {
       const paths = {
         reference: `${this.options.fixturesDir}/${snapshotId}.${viewport}.png`,
-        regression: `${this.options.resultsDir}/${snapshotId}${opt.regressionSuffix ? '.' + opt.regressionSuffix : ''}.${viewport}.png`,
-        diff: `${this.options.resultsDir}/${snapshotId}${opt.regressionSuffix ? '.' + opt.regressionSuffix : ''}.${viewport}.diff.png`
+        regression: `${this.options.resultsDir}/${snapshotId}${opts.regressionSuffix ? '.' + opts.regressionSuffix : ''}.${viewport}.png`,
+        diff: `${this.options.resultsDir}/${snapshotId}${opts.regressionSuffix ? '.' + opts.regressionSuffix : ''}.${viewport}.diff.png`
       };
 
       this.page = await this.newPage(viewport);
@@ -111,7 +108,7 @@ export class VisualRegressionTester {
 
       if (fs.existsSync(paths.reference)) {
         const reference = await Jimp.read(paths.reference);
-        const regression = await this.compareSnapshots(reference, opt.elementSelector, opt.maskSelectors);
+        const regression = await this.compareSnapshots(reference, opts.elementSelector, opts.maskSelectors);
 
         if (regression) {
           error = true;
@@ -119,8 +116,8 @@ export class VisualRegressionTester {
           regression.diff.write(paths.diff);
         }
       } else {
-        const reference = await this.createSnapshot(opt.elementSelector, opt.maskSelectors);
-        await reference.write(paths.reference);
+        const reference = await this.createSnapshot(opts.elementSelector, opts.maskSelectors);
+        reference.write(paths.reference);
       }
 
       await this.page.close();
