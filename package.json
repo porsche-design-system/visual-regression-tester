@@ -34,12 +34,11 @@
   "scripts": {
     "start": "yarn build && http-server ./tests/pages -p 61423",
     "build": "tsc",
-    "test": "concurrently -k -s \"first\" -n \"server,test\" \"yarn start\" \"wait-on -t 180000 http-get://localhost:61423 && ts-node --project 'tests/config/tsconfig.json' node_modules/.bin/jasmine --config='tests/config/jasmine.config.json'\""
+    "test": "concurrently -k -s 'first' -n 'server,test' 'yarn start' 'wait-on -t 180000 http-get://localhost:61423 && ts-node --project tests/config/tsconfig.json node_modules/.bin/jasmine --config=tests/config/jasmine.config.json'"
   },
   "dependencies": {
     "del": "^5.1.0",
-    "jimp": "^0.10.3",
-    "puppeteer": "~3.0.4"
+    "jimp": "^0.10.3"
   },
   "devDependencies": {
     "@types/del": "^4.0.0",
@@ -51,8 +50,12 @@
     "jasmine": "^3.5.0",
     "jasmine-core": "^3.5.0",
     "jasmine-spec-reporter": "~5.0.2",
+    "puppeteer": "^5.0.0",
     "ts-node": "^8.10.1",
     "typescript": "^3.9.2",
     "wait-on": "^5.0.0"
+  },
+  "peerDependencies": {
+    "puppeteer": ">=5.0.0"
   }
 }
