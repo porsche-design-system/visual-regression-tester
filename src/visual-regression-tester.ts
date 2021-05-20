@@ -53,10 +53,10 @@ export class VisualRegressionTester {
     ]);
   }
 
-  async click(selector: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0, options?: Partial<ClickOptions>): Promise<void> {
+  async click(selector: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
     await Promise.all([
       this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests),
-      this.page.click(selector, options)
+      this.page.evaluate((selector) => document.querySelector(selector).click(), selector),
     ]);
   }
 
