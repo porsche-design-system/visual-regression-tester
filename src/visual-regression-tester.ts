@@ -183,8 +183,8 @@ export class VisualRegressionTester {
 
   private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
     const buffer = await (elementSelector
-      ? (await (await this.page.$(elementSelector)).screenshot()) as unknown as Promise<string>
-      : ((await this.page.screenshot({ fullPage: true })) as unknown as Promise<string>));
+      ? (await this.page.$(elementSelector)).screenshot() as unknown as Promise<string>
+      : (this.page.screenshot({ fullPage: true }) as unknown as Promise<string>));
 
     let image: Jimp;
     image = await Jimp.read(buffer);

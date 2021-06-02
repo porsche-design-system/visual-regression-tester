@@ -2,6 +2,7 @@ import 'jasmine';
 import * as puppeteer from 'puppeteer';
 import { Browser } from 'puppeteer';
 import { VisualRegressionTester, VisualRegressionTestOptions } from '../../src/visual-regression-tester';
+import { SpecReporter } from 'jasmine-spec-reporter';
 
 let browser: Browser;
 let visualRegressionTester: VisualRegressionTester;
@@ -16,6 +17,9 @@ const testOptions: VisualRegressionTestOptions = {
 };
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+
+jasmine.getEnv().clearReporters();
+jasmine.getEnv().addReporter(new SpecReporter() as jasmine.CustomReporter);
 
 afterAll(async () => {
   if (browser) {
