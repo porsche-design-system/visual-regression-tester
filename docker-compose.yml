@@ -15,7 +15,7 @@ services:
       - home:/home/visual-regression-tester
       - node-modules:/opt/visual-regression-tester-app/node_modules
   change-volume-owner:
-    image: node:10.15.3-alpine@sha256:b85a3b0ef76f5543b3f467e8a25694e72594d2c2bfcf140fa584d4f40ace4130
+    build: ./docker/node
     volumes:
       - home:/opt/visual-regression-tester-volumes/home
       - node-modules:/opt/visual-regression-tester-volumes/node_modules
