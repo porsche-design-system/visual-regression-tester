@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Updated npm dependencies
+
 ## [3.0.0] - 2020-07-09
 ### Changed
 - Made `puppeteer` a peerDependency
