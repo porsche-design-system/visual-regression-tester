@@ -1,4 +1,4 @@
-FROM node:14.16.1-stretch-slim
+FROM node:12.16.1-stretch@sha256:facc1cbde6e5aa3255092b1a1417451953c80bd31ab5a4403f8bcd90b90a8407
 ENV PATH="/opt/visual-regression-tester/bin:${PATH}"
 
 RUN apt-get update && \
