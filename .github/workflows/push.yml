@@ -16,8 +16,6 @@ jobs:
           entrypoint: run-install
       - name: 'Build'
         uses: ./docker/node/
-        env:
-          PORSCHE_NPM_REGISTRY_TOKEN: ${{ secrets.PORSCHE_NPM_REGISTRY_TOKEN }}
         with:
           entrypoint: run-build
       - name: 'Test'
