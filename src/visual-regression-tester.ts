@@ -1,7 +1,7 @@
 import * as Jimp from 'jimp/dist';
 import * as del from 'del';
 import * as fs from 'fs';
-import { BoundingBox, Browser, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
+import {BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent} from 'puppeteer';
 
 export interface VisualRegressionTestOptions {
   viewports?: number[];
@@ -53,10 +53,10 @@ export class VisualRegressionTester {
     ]);
   }
 
-  async click(selector: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
+  async click(selector: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0, options?: Partial<ClickOptions>): Promise<void> {
     await Promise.all([
       this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests),
-      this.page.evaluate((selector) => document.querySelector(selector).click(), selector),
+      this.page.click(selector, options)
     ]);
   }
 
@@ -183,7 +183,7 @@ export class VisualRegressionTester {
 
   private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
     const buffer = await (elementSelector
-      ? ((await await this.page.$(elementSelector)).screenshot() as unknown as Promise<string>)
+      ? (await (await this.page.$(elementSelector)).screenshot()) as unknown as Promise<string>
       : ((await this.page.screenshot({ fullPage: true })) as unknown as Promise<string>));
 
     let image: Jimp;

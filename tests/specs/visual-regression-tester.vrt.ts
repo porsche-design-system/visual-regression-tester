@@ -5,7 +5,7 @@ import { getVisualRegressionRetinaTester, getVisualRegressionTester } from '../h
 describe('Visual-Regression-Test Tester', () => {
   let visualRegressionTester: VisualRegressionTester;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     visualRegressionTester = await getVisualRegressionTester();
   });
 
