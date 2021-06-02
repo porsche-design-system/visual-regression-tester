@@ -1,10 +1,7 @@
-import "jasmine";
-import * as puppeteer from "puppeteer";
-import { Browser } from "puppeteer";
-import {
-  VisualRegressionTester,
-  VisualRegressionTestOptions,
-} from "../../src/visual-regression-tester";
+import 'jasmine';
+import * as puppeteer from 'puppeteer';
+import { Browser } from 'puppeteer';
+import { VisualRegressionTester, VisualRegressionTestOptions } from '../../src/visual-regression-tester';
 
 let browser: Browser;
 let visualRegressionTester: VisualRegressionTester;
@@ -12,10 +9,10 @@ let visualRegressionRetinaTester: VisualRegressionTester;
 
 const testOptions: VisualRegressionTestOptions = {
   viewports: [320, 760],
-  fixturesDir: "tests/fixtures",
-  resultsDir: "tests/results",
+  fixturesDir: 'tests/fixtures',
+  resultsDir: 'tests/results',
   tolerance: 0,
-  baseUrl: "http://localhost:61423",
+  baseUrl: 'http://localhost:61423',
 };
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
@@ -29,7 +26,7 @@ afterAll(async () => {
 export const getVisualRegressionTester = async (): Promise<VisualRegressionTester> => {
   if (!visualRegressionTester) {
     browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--single-process"],
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--single-process'],
     });
     visualRegressionTester = new VisualRegressionTester(browser, testOptions);
   }
@@ -40,7 +37,7 @@ export const getVisualRegressionTester = async (): Promise<VisualRegressionTeste
 export const getVisualRegressionRetinaTester = async (): Promise<VisualRegressionTester> => {
   if (!visualRegressionRetinaTester) {
     browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     visualRegressionRetinaTester = new VisualRegressionTester(browser, {
       ...testOptions,

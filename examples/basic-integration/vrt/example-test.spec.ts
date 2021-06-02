@@ -11,7 +11,7 @@ describe('Example integration of visual regression tester', () => {
     fixturesDir: 'vrt/fixtures',
     resultsDir: 'vrt/results',
     tolerance: 0,
-    baseUrl: 'http://localhost:61422'
+    baseUrl: 'http://localhost:61422',
   };
 
   beforeAll(async () => {
@@ -21,9 +21,11 @@ describe('Example integration of visual regression tester', () => {
   });
 
   it('should show hello world without regression', async () => {
-    expect(await visualRegressionTester.test('hello-world', async () => {
-      await visualRegressionTester.goTo('/');
-    })).toBeFalsy();
+    expect(
+      await visualRegressionTester.test('hello-world', async () => {
+        await visualRegressionTester.goTo('/');
+      })
+    ).toBeFalsy();
   });
 
   afterAll(async () => {
