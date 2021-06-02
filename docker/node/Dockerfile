@@ -1,5 +1,4 @@
-FROM node:12.16.1-stretch@sha256:facc1cbde6e5aa3255092b1a1417451953c80bd31ab5a4403f8bcd90b90a8407
-
+FROM node:14.16.1-stretch-slim
 ENV PATH="/opt/visual-regression-tester/bin:${PATH}"
 
 RUN apt-get update && \
@@ -13,5 +12,6 @@ RUN apt-get update && \
 
 COPY ./entrypoint.sh "/opt/visual-regression-tester/entrypoint.sh"
 COPY ./bin "/opt/visual-regression-tester/bin"
+COPY ./shared "/opt/visual-regression-tester/shared"
 
 ENTRYPOINT [ "/opt/visual-regression-tester/entrypoint.sh" ]
