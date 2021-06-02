@@ -31,6 +31,7 @@
   "publishConfig": {
     "@porsche-design-system:registry": "https://porscheui.jfrog.io/porscheui/api/npm/npm-local/"
   },
+  "prettier": "@porsche-design-system/prettier-config",
   "scripts": {
     "start": "yarn build && http-server ./tests/pages -p 61423",
     "build": "tsc",
@@ -41,6 +42,7 @@
     "jimp": "^0.16.1"
   },
   "devDependencies": {
+    "@porsche-design-system/prettier-config": "^1.0.0",
     "@types/del": "^4.0.0",
     "@types/jasmine": "^3.6.2",
     "@types/jasminewd2": "^2.0.8",
@@ -49,6 +51,7 @@
     "jasmine": "^3.6.3",
     "jasmine-core": "^3.6.0",
     "jasmine-spec-reporter": "~6.0.0",
+    "prettier": "^2.2.1",
     "puppeteer": "^10.0.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3",
