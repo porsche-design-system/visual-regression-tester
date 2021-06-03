@@ -1,4 +1,3 @@
-import 'jasmine';
 import { VisualRegressionTester } from '../../src/visual-regression-tester';
 import { getVisualRegressionRetinaTester, getVisualRegressionTester } from '../helpers/setup';
 

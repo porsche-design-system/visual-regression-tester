@@ -1,4 +1,3 @@
-import 'jasmine';
 import * as puppeteer from 'puppeteer';
 import { Browser } from 'puppeteer';
 import { VisualRegressionTester, VisualRegressionTestOptions } from '@porsche-design-system/visual-regression-tester';
