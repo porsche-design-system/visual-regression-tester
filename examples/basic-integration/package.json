@@ -1,17 +1,14 @@
 {
   "scripts": {
-    "start": "http-server -p 61422",
-    "visual-regression-tests": "ts-node --project vrt/tsconfig.json node_modules/jasmine/bin/jasmine --config=vrt/jasmine.config.json",
-    "upgrade-interactive": "npm-check --update"
+    "start": "http-server -p 61422 -s",
+    "test": "ts-node --project vrt/tsconfig.json node_modules/jasmine/bin/jasmine --config=vrt/jasmine.config.json"
   },
   "dependencies": {
-    "@porsche-design-system/visual-regression-tester": "^1.0.0",
-    "http-server": "^0.11.1",
-    "jasmine": "^3.3.1",
-    "puppeteer": "^1.9.0",
-    "ts-node": "^7.0.1"
-  },
-  "devDependencies": {
-    "npm-check": "^5.9.0"
+    "@porsche-design-system/visual-regression-tester": "^4.0.0",
+    "http-server": "^0.12.3",
+    "jasmine": "^3.6.3",
+    "puppeteer": "^10.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2"
   }
 }

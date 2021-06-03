@@ -1,4 +1,4 @@
-FROM node:12.16.1-stretch@sha256:facc1cbde6e5aa3255092b1a1417451953c80bd31ab5a4403f8bcd90b90a8407
+FROM node:14.16.1-stretch-slim
 
 ENV PATH="/opt/visual-regression-tester/bin:${PATH}"
 
@@ -8,10 +8,11 @@ RUN apt-get update && \
     libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
     libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
     ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils libnotify-dev \
-    libgtk2.0-0 xvfb && \
+    libgtk2.0-0 xvfb rsync openssh-client procps git curl && \
     rm -rf /var/lib/apt/lists/*
 
 COPY ./entrypoint.sh "/opt/visual-regression-tester/entrypoint.sh"
 COPY ./bin "/opt/visual-regression-tester/bin"
+COPY ./shared "/opt/visual-regression-tester/shared"
 
 ENTRYPOINT [ "/opt/visual-regression-tester/entrypoint.sh" ]
