@@ -13,11 +13,30 @@ A NPM package that exports functions to create visual regression tests
 ### Getting started
 
 1. Clone [`visual-regression-tester` repository](https://github.com/porscheui/porsche-visual-regression-tester)
-1. Switch to __project root directory__
-1. Run `./docker.sh run-install` - this may take up to several minutes at first start depending on your internet
-   connection
+1. Switch to **project root directory**
+1. Checkout branch **master** by executing `git checkout master`
+1. Execute command `npm login --registry=https://porscheui.jfrog.io/porscheui/api/npm/npm/`
+1. Enter username, password (Artifactory API Key, **not** Artifactory password!) and e-mail address when asked in terminal
+1. Execute `cat ~/.npmrc`, find following line `//porscheui.jfrog.io/porscheui/api/npm/npm/:_authToken=` and copy the generated _npm registry token_ from the file to your clipboard
+1. Create an `.env` file within **project root directory** (never push this file to Git because it will contain secrets – by default it's ignored by `.gitignore`)
+1. Add _npm registry token_ in following format `PORSCHE_NPM_REGISTRY_TOKEN=YOUR_TOKEN_GOES_HERE`
+1. Make sure that Docker app is running
 
-*Note: `./docker.sh run-install` should be executed after every pull.*
+1. Run `./docker.sh run-install` - this may take up to several minutes at first start depending on your internet connection
+
+_Note: `./docker.sh run-install` should be executed after every pull._
+
+### Setup prettier
+
+1. Go to Webstorm `Preferences`
+1. Click on the Plugins tab and search for `prettier`
+1. Install prettier
+1. In `Preferences` go to `Languages and Frameworks` -> `Javascript` -> `Prettier`
+1. Set `Prettier Package` to `{PATH_TO_YOUR_DIRECTORY}/node_modules/prettier`
+1. Change `Run for files` to `{**/*,*}.{js,ts,jsx,tsx,vue,scss,json,css}`
+1. Click checkbox `on save` and apply
+1. You should be good to go.
+1. If you have to exclude code fom being prettified, see [Prettier configuration](https://prettier.io/docs/en/ignore.html#javascript)
 
 ### Docker installation steps
 
