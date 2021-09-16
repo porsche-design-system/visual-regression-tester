@@ -1,6 +1,6 @@
 {
   "name": "@porsche-design-system/visual-regression-tester",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "scope": "@porsche-design-system",
   "author": "Dr. Ing. h.c. F. Porsche AG",
   "contributors": [
@@ -44,15 +44,15 @@
   "devDependencies": {
     "@porsche-design-system/prettier-config": "^1.0.0",
     "@types/del": "^4.0.0",
-    "@types/jasmine": "^3.7.6",
-    "concurrently": "^6.2.0",
+    "@types/jasmine": "^3.9.1",
+    "concurrently": "^6.2.1",
     "http-server": "^13.0.2",
-    "jasmine": "^3.7.0",
+    "jasmine": "^3.9.0",
     "jasmine-spec-reporter": "~7.0.0",
     "prettier": "^2.3.0",
-    "puppeteer": "^10.0.0",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.3.2",
+    "puppeteer": "^10.2.0",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3",
     "wait-on": "^6.0.0"
   },
   "peerDependencies": {
