@@ -4,8 +4,8 @@ import { getVisualRegressionRetinaTester, getVisualRegressionTester } from '../h
 describe('Visual-Regression-Test Tester', () => {
   let visualRegressionTester: VisualRegressionTester;
 
-  beforeAll(async () => {
-    visualRegressionTester = await getVisualRegressionTester();
+  beforeAll(() => {
+    visualRegressionTester = getVisualRegressionTester();
   });
 
   it('should have no visual regression for test page', async () => {
@@ -206,8 +206,8 @@ describe('Visual-Regression-Test Tester', () => {
 describe('Visual-Regression-Test Retina Tester', () => {
   let vrt: VisualRegressionTester;
 
-  beforeAll(async () => {
-    vrt = await getVisualRegressionRetinaTester();
+  beforeAll(() => {
+    vrt = getVisualRegressionRetinaTester();
   });
 
   it('should have no visual regression for test page', async () => {
