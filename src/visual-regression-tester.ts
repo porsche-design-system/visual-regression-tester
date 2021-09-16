@@ -3,7 +3,7 @@ import * as del from 'del';
 import * as fs from 'fs';
 import { BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 
-export interface VisualRegressionTestOptions {
+export type VisualRegressionTestOptions = {
   viewports?: number[];
   deviceScaleFactor?: number;
   fixturesDir?: string;
@@ -13,13 +13,13 @@ export interface VisualRegressionTestOptions {
   timeout?: number;
   mode?: 'auto' | 'square-auto';
   waitUntilMethod?: PuppeteerLifeCycleEvent;
-}
+};
 
-interface TestOptions {
+export type TestOptions = {
   elementSelector?: string;
   maskSelectors?: string[];
   regressionSuffix?: string;
-}
+};
 
 export class VisualRegressionTester {
   private options: VisualRegressionTestOptions = {
@@ -92,17 +92,18 @@ export class VisualRegressionTester {
       regressionSuffix: '',
       ...options,
     };
-    let error = false;
+
+    const errors: number[] = [];
 
     for (const viewport of this.options.viewports) {
+      const { regressionSuffix } = opts;
+      const { fixturesDir, resultsDir } = this.options;
+      const suffix = regressionSuffix ? '.' + regressionSuffix : '';
+
       const paths = {
-        reference: `${this.options.fixturesDir}/${snapshotId}.${viewport}.png`,
-        regression: `${this.options.resultsDir}/${snapshotId}${
-          opts.regressionSuffix ? '.' + opts.regressionSuffix : ''
-        }.${viewport}.png`,
-        diff: `${this.options.resultsDir}/${snapshotId}${
-          opts.regressionSuffix ? '.' + opts.regressionSuffix : ''
-        }.${viewport}.diff.png`,
+        reference: `${fixturesDir}/${snapshotId}.${viewport}.png`,
+        regression: `${resultsDir}/${snapshotId}${suffix}.${viewport}.png`,
+        diff: `${resultsDir}/${snapshotId}${suffix}.${viewport}.diff.png`,
       };
 
       this.page = await this.newPage(viewport);
@@ -123,7 +124,7 @@ export class VisualRegressionTester {
         const regression = await this.compareSnapshots(reference, opts.elementSelector, opts.maskSelectors);
 
         if (regression) {
-          error = true;
+          errors.push(viewport);
           regression.image.write(paths.regression);
           regression.diff.write(paths.diff);
         }
@@ -135,7 +136,11 @@ export class VisualRegressionTester {
       await this.page.close();
     }
 
-    return error;
+    if (errors.length) {
+      console.log('Failed viewports:', errors.join(', '));
+    }
+
+    return errors.length > 0;
   }
 
   public waitForNetworkIdle(timeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
@@ -157,9 +162,9 @@ export class VisualRegressionTester {
     };
 
     const onTimeoutDone = () => {
-      this.page.removeListener('request', onRequestStarted);
-      this.page.removeListener('requestfinished', onRequestFinished);
-      this.page.removeListener('requestfailed', onRequestFinished);
+      this.page.off('request', onRequestStarted);
+      this.page.off('requestfinished', onRequestFinished);
+      this.page.off('requestfailed', onRequestFinished);
       fulfill();
     };
 
@@ -188,14 +193,20 @@ export class VisualRegressionTester {
 
   private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
     const buffer = await (elementSelector
-      ? ((await this.page.$(elementSelector)).screenshot() as unknown as Promise<string>)
-      : (this.page.screenshot({ fullPage: true }) as unknown as Promise<string>));
+      ? ((
+          await this.page.$(elementSelector)
+        ).screenshot({
+          captureBeyondViewport: false,
+        }) as unknown as Promise<string>)
+      : (this.page.screenshot({
+          fullPage: true,
+          captureBeyondViewport: false,
+        }) as unknown as Promise<string>));
 
-    let image: Jimp;
-    image = await Jimp.read(buffer);
-    image = await this.maskSnapshot(image, elementSelector, maskSelectors);
+    const rawImage = await Jimp.read(buffer as string);
+    const maskedImage = await this.maskSnapshot(rawImage, elementSelector, maskSelectors);
 
-    return image;
+    return maskedImage;
   }
 
   private async maskSnapshot(image: Jimp, elementSelector: string, maskSelectors: string[]): Promise<Jimp> {

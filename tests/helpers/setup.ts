@@ -17,7 +17,7 @@ const testOptions: VisualRegressionTestOptions = {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
 jasmine.getEnv().clearReporters();
-jasmine.getEnv().addReporter(new SpecReporter() as jasmine.CustomReporter);
+jasmine.getEnv().addReporter(new SpecReporter());
 
 beforeAll(async () => {
   browser = await launch({
@@ -37,7 +37,7 @@ afterAll(async () => {
   }
 });
 
-export const getVisualRegressionTester = async (): Promise<VisualRegressionTester> => {
+export const getVisualRegressionTester = (): VisualRegressionTester => {
   if (!visualRegressionTester) {
     visualRegressionTester = new VisualRegressionTester(browser, testOptions);
   }
@@ -45,7 +45,7 @@ export const getVisualRegressionTester = async (): Promise<VisualRegressionTeste
   return visualRegressionTester;
 };
 
-export const getVisualRegressionRetinaTester = async (): Promise<VisualRegressionTester> => {
+export const getVisualRegressionRetinaTester = (): VisualRegressionTester => {
   if (!visualRegressionRetinaTester) {
     visualRegressionRetinaTester = new VisualRegressionTester(browser, {
       ...testOptions,
