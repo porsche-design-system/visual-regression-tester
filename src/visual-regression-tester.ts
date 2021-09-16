@@ -117,7 +117,7 @@ export class VisualRegressionTester {
 
   async test(
     snapshotId: string,
-    scenario: Function,
+    scenario: () => Promise<void>,
     options?: TestOptions
   ): Promise<boolean> {
     const opts: TestOptions = {
@@ -126,17 +126,18 @@ export class VisualRegressionTester {
       regressionSuffix: "",
       ...options,
     };
-    let error = false;
+
+    const errors: number[] = [];
 
     for (const viewport of this.options.viewports) {
+      const { regressionSuffix } = opts;
+      const { fixturesDir, resultsDir } = this.options;
+      const suffix = regressionSuffix ? "." + regressionSuffix : "";
+
       const paths = {
-        reference: `${this.options.fixturesDir}/${snapshotId}.${viewport}.png`,
-        regression: `${this.options.resultsDir}/${snapshotId}${
-          opts.regressionSuffix ? "." + opts.regressionSuffix : ""
-        }.${viewport}.png`,
-        diff: `${this.options.resultsDir}/${snapshotId}${
-          opts.regressionSuffix ? "." + opts.regressionSuffix : ""
-        }.${viewport}.diff.png`,
+        reference: `${fixturesDir}/${snapshotId}.${viewport}.png`,
+        regression: `${resultsDir}/${snapshotId}${suffix}.${viewport}.png`,
+        diff: `${resultsDir}/${snapshotId}${suffix}.${viewport}.diff.png`,
       };
 
       this.page = await this.newPage(viewport);
@@ -161,7 +162,7 @@ export class VisualRegressionTester {
         );
 
         if (regression) {
-          error = true;
+          errors.push(viewport);
           regression.image.write(paths.regression);
           regression.diff.write(paths.diff);
         }
@@ -176,7 +177,11 @@ export class VisualRegressionTester {
       await this.page.close();
     }
 
-    return error;
+    if (errors.length) {
+      console.log("Failed viewports:", errors.join(", "));
+    }
+
+    return errors.length > 0;
   }
 
   public waitForNetworkIdle(
@@ -201,9 +206,9 @@ export class VisualRegressionTester {
     };
 
     const onTimeoutDone = () => {
-      this.page.removeListener("request", onRequestStarted);
-      this.page.removeListener("requestfinished", onRequestFinished);
-      this.page.removeListener("requestfailed", onRequestFinished);
+      this.page.off("request", onRequestStarted);
+      this.page.off("requestfinished", onRequestFinished);
+      this.page.off("requestfailed", onRequestFinished);
       fulfill();
     };
 
@@ -245,11 +250,14 @@ export class VisualRegressionTester {
           captureBeyondViewport: false,
         }) as unknown as Promise<string>));
 
-    let image: Jimp;
-    image = await Jimp.read(buffer);
-    image = await this.maskSnapshot(image, elementSelector, maskSelectors);
+    const rawImage = await Jimp.read(buffer as string);
+    const maskedImage = await this.maskSnapshot(
+      rawImage,
+      elementSelector,
+      maskSelectors
+    );
 
-    return image;
+    return maskedImage;
   }
 
   private async maskSnapshot(
