@@ -1,14 +1,7 @@
-import * as Jimp from "jimp/dist";
-import * as del from "del";
-import * as fs from "fs";
-import {
-  BoundingBox,
-  Browser,
-  ClickOptions,
-  ElementHandle,
-  Page,
-  PuppeteerLifeCycleEvent,
-} from "puppeteer";
+import * as Jimp from 'jimp/dist';
+import * as del from 'del';
+import * as fs from 'fs';
+import { BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 
 export interface VisualRegressionTestOptions {
   viewports?: number[];
@@ -18,7 +11,7 @@ export interface VisualRegressionTestOptions {
   tolerance?: number;
   baseUrl?: string;
   timeout?: number;
-  mode?: "auto" | "square-auto";
+  mode?: 'auto' | 'square-auto';
   waitUntilMethod?: PuppeteerLifeCycleEvent;
 }
 
@@ -32,20 +25,17 @@ export class VisualRegressionTester {
   private options: VisualRegressionTestOptions = {
     viewports: [320, 480, 760, 1000, 1300, 1760],
     deviceScaleFactor: 1,
-    fixturesDir: "vrt/fixtures",
-    resultsDir: "vrt/results",
+    fixturesDir: 'vrt/fixtures',
+    resultsDir: 'vrt/results',
     tolerance: 0,
-    baseUrl: "http://localhost",
+    baseUrl: 'http://localhost',
     timeout: 30000,
-    mode: "auto",
-    waitUntilMethod: "networkidle0",
+    mode: 'auto',
+    waitUntilMethod: 'networkidle0',
   };
   private page: Page;
 
-  constructor(
-    private browser: Browser,
-    options: VisualRegressionTestOptions = {}
-  ) {
+  constructor(private browser: Browser, options: VisualRegressionTestOptions = {}) {
     this.options = {
       ...this.options,
       ...options,
@@ -56,16 +46,10 @@ export class VisualRegressionTester {
     return this.page;
   }
 
-  async goTo(
-    url: string,
-    networkIdleTimeout: number = 500,
-    maxInflightRequests: number = 0
-  ): Promise<void> {
+  async goTo(url: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
     await Promise.all([
       this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests),
-      this.page.goto(`${this.options.baseUrl}${url}`, {
-        waitUntil: this.options.waitUntilMethod,
-      }),
+      this.page.goto(`${this.options.baseUrl}${url}`, { waitUntil: this.options.waitUntilMethod }),
     ]);
   }
 
@@ -81,15 +65,8 @@ export class VisualRegressionTester {
     ]);
   }
 
-  async focus(
-    selector: string,
-    networkIdleTimeout: number = 500,
-    maxInflightRequests: number = 0
-  ): Promise<void> {
-    await Promise.all([
-      this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests),
-      this.page.focus(selector),
-    ]);
+  async focus(selector: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
+    await Promise.all([this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests), this.page.focus(selector)]);
   }
 
   async type(
@@ -104,26 +81,15 @@ export class VisualRegressionTester {
     ]);
   }
 
-  async hover(
-    selector: string,
-    networkIdleTimeout: number = 500,
-    maxInflightRequests: number = 0
-  ): Promise<void> {
-    await Promise.all([
-      this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests),
-      this.page.hover(selector),
-    ]);
+  async hover(selector: string, networkIdleTimeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
+    await Promise.all([this.waitForNetworkIdle(networkIdleTimeout, maxInflightRequests), this.page.hover(selector)]);
   }
 
-  async test(
-    snapshotId: string,
-    scenario: () => Promise<void>,
-    options?: TestOptions
-  ): Promise<boolean> {
+  async test(snapshotId: string, scenario: Function, options?: TestOptions): Promise<boolean> {
     const opts: TestOptions = {
-      elementSelector: "",
+      elementSelector: '',
       maskSelectors: [],
-      regressionSuffix: "",
+      regressionSuffix: '',
       ...options,
     };
 
@@ -132,7 +98,7 @@ export class VisualRegressionTester {
     for (const viewport of this.options.viewports) {
       const { regressionSuffix } = opts;
       const { fixturesDir, resultsDir } = this.options;
-      const suffix = regressionSuffix ? "." + regressionSuffix : "";
+      const suffix = regressionSuffix ? '.' + regressionSuffix : '';
 
       const paths = {
         reference: `${fixturesDir}/${snapshotId}.${viewport}.png`,
@@ -155,11 +121,7 @@ export class VisualRegressionTester {
 
       if (fs.existsSync(paths.reference)) {
         const reference = await Jimp.read(paths.reference);
-        const regression = await this.compareSnapshots(
-          reference,
-          opts.elementSelector,
-          opts.maskSelectors
-        );
+        const regression = await this.compareSnapshots(reference, opts.elementSelector, opts.maskSelectors);
 
         if (regression) {
           errors.push(viewport);
@@ -167,10 +129,7 @@ export class VisualRegressionTester {
           regression.diff.write(paths.diff);
         }
       } else {
-        const reference = await this.createSnapshot(
-          opts.elementSelector,
-          opts.maskSelectors
-        );
+        const reference = await this.createSnapshot(opts.elementSelector, opts.maskSelectors);
         reference.write(paths.reference);
       }
 
@@ -178,16 +137,13 @@ export class VisualRegressionTester {
     }
 
     if (errors.length) {
-      console.log("Failed viewports:", errors.join(", "));
+      console.log('Failed viewports:', errors.join(', '));
     }
 
     return errors.length > 0;
   }
 
-  public waitForNetworkIdle(
-    timeout: number = 500,
-    maxInflightRequests: number = 0
-  ): Promise<void> {
+  public waitForNetworkIdle(timeout: number = 500, maxInflightRequests: number = 0): Promise<void> {
     const onRequestStarted = () => {
       ++inflight;
       if (inflight > maxInflightRequests) {
@@ -206,9 +162,9 @@ export class VisualRegressionTester {
     };
 
     const onTimeoutDone = () => {
-      this.page.off("request", onRequestStarted);
-      this.page.off("requestfinished", onRequestFinished);
-      this.page.off("requestfailed", onRequestFinished);
+      this.page.off('request', onRequestStarted);
+      this.page.off('requestfinished', onRequestFinished);
+      this.page.off('requestfailed', onRequestFinished);
       fulfill();
     };
 
@@ -216,9 +172,9 @@ export class VisualRegressionTester {
     let fulfill: (value?: void | PromiseLike<void>) => void;
     let timeoutId = setTimeout(onTimeoutDone, timeout);
 
-    this.page.on("request", onRequestStarted);
-    this.page.on("requestfinished", onRequestFinished);
-    this.page.on("requestfailed", onRequestFinished);
+    this.page.on('request', onRequestStarted);
+    this.page.on('requestfinished', onRequestFinished);
+    this.page.on('requestfailed', onRequestFinished);
 
     return new Promise((x) => (fulfill = x));
   }
@@ -228,17 +184,14 @@ export class VisualRegressionTester {
     page.setDefaultNavigationTimeout(this.options.timeout);
     await page.setViewport({
       width: viewport,
-      height: this.options.mode === "square-auto" ? viewport : 1,
+      height: this.options.mode === 'square-auto' ? viewport : 1,
       deviceScaleFactor: this.options.deviceScaleFactor,
     });
 
     return page;
   }
 
-  private async createSnapshot(
-    elementSelector: string,
-    maskSelectors: string[]
-  ): Promise<Jimp> {
+  private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
     const buffer = await (elementSelector
       ? ((
           await this.page.$(elementSelector)
@@ -251,20 +204,12 @@ export class VisualRegressionTester {
         }) as unknown as Promise<string>));
 
     const rawImage = await Jimp.read(buffer as string);
-    const maskedImage = await this.maskSnapshot(
-      rawImage,
-      elementSelector,
-      maskSelectors
-    );
+    const maskedImage = await this.maskSnapshot(rawImage, elementSelector, maskSelectors);
 
     return maskedImage;
   }
 
-  private async maskSnapshot(
-    image: Jimp,
-    elementSelector: string,
-    maskSelectors: string[]
-  ): Promise<Jimp> {
+  private async maskSnapshot(image: Jimp, elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
     for (const maskSelector of maskSelectors) {
       const elements = await this.page.$$(`${elementSelector} ${maskSelector}`);
 
@@ -272,7 +217,7 @@ export class VisualRegressionTester {
         const boundingBox = await this.getBoundingBox(element);
         if (boundingBox !== null) {
           const { width, height, x, y } = boundingBox;
-          const mask = new Jimp(width, height, "#FF00FF");
+          const mask = new Jimp(width, height, '#FF00FF');
 
           image = image.composite(mask, x, y);
         }
@@ -282,10 +227,7 @@ export class VisualRegressionTester {
     return image;
   }
 
-  private async getBoundingBox(
-    element: ElementHandle,
-    extendOuterBounds: number = 1
-  ): Promise<BoundingBox> {
+  private async getBoundingBox(element: ElementHandle, extendOuterBounds: number = 1): Promise<BoundingBox> {
     const boundingBox = await element.boundingBox();
 
     if (boundingBox !== null) {

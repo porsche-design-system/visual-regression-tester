@@ -1,6 +1,6 @@
 {
   "name": "@porsche-design-system/visual-regression-tester",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "scope": "@porsche-design-system",
   "author": "Dr. Ing. h.c. F. Porsche AG",
   "contributors": [
@@ -31,29 +31,31 @@
   "publishConfig": {
     "@porsche-design-system:registry": "https://porscheui.jfrog.io/porscheui/api/npm/npm-local/"
   },
+  "prettier": "@porsche-design-system/prettier-config",
   "scripts": {
-    "start": "yarn build && http-server ./tests/pages -p 61423",
+    "start": "yarn build && http-server ./tests/pages -p 61423 -s",
     "build": "tsc",
-    "test": "concurrently -k -s 'first' -n 'server,test' 'yarn start' 'wait-on -t 180000 http-get://localhost:61423 && ts-node --project tests/config/tsconfig.json node_modules/.bin/jasmine --config=tests/config/jasmine.config.json'"
+    "test": "concurrently -k -s 'first' -n 'server,test' 'yarn start' 'wait-on -t 30000 http-get://localhost:61423 && ts-node --project tests/config/tsconfig.json node_modules/.bin/jasmine --config=tests/config/jasmine.config.json'"
   },
   "dependencies": {
     "del": "^6.0.0",
     "jimp": "^0.16.1"
   },
   "devDependencies": {
+    "@porsche-design-system/prettier-config": "^1.0.0",
     "@types/del": "^4.0.0",
-    "@types/jasmine": "^3.9.1",
-    "concurrently": "^6.2.1",
-    "http-server": "^13.0.2",
-    "jasmine": "^3.9.0",
-    "jasmine-core": "^3.9.0",
+    "@types/jasmine": "^3.7.6",
+    "concurrently": "^6.2.0",
+    "http-server": "^0.12.3",
+    "jasmine": "^3.7.0",
     "jasmine-spec-reporter": "~7.0.0",
-    "puppeteer": "^10.2.0",
-    "ts-node": "^10.2.1",
-    "typescript": "^4.4.3",
-    "wait-on": "^6.0.0"
+    "prettier": "^2.3.0",
+    "puppeteer": "^10.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2",
+    "wait-on": "^5.3.0"
   },
   "peerDependencies": {
-    "puppeteer": ">=7.0.0"
+    "puppeteer": ">=10.0.0"
   }
 }

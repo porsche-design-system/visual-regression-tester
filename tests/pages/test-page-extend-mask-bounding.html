@@ -1,36 +1,42 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <style type="text/css">
-    * {
-      margin: 0;
-      padding: 0;
-    }
+  <head>
+    <style type="text/css">
+      * {
+        margin: 0;
+        padding: 0;
+      }
 
-    html, body {
-      overflow-x: hidden;
-    }
-  </style>
-</head>
-<body>
+      html,
+      body {
+        overflow-x: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>
+      An element that is as wide as the viewport and is masked with an extended bounding box should not increase the
+      size of the generated fixture image within the visual regression test.
+    </h3>
+    <div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px 0"></div>
 
-<h3>An element that is as wide as the viewport and is masked with an extended bounding box should not increase the
-  size of the generated fixture image within the visual regression test.</h3>
-<div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px 0;"></div>
+    <hr style="margin: 20px" />
 
-<hr style="margin: 20px;">
+    <h3>
+      An element should get masked exactly with the extended bounding box position and dimension (instead with it's
+      own).
+    </h3>
+    <div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px 1px"></div>
+    <div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px 2px"></div>
+    <div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px"></div>
+    <div style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px"></div>
 
-<h3>An element should get masked exactly with the extended bounding box position and dimension (instead with it's own).</h3>
-<div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px 1px;"></div>
-<div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px 2px;"></div>
-<div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px;"></div>
-<div style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px;"></div>
+    <hr style="margin: 20px" />
 
-<hr style="margin: 20px;">
-
-<h3>An element that is larger than the viewport and is masked should not mess up the size of the visual regression
-  fixture size.</h3>
-<div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px -10px;"></div>
-
-</body>
+    <h3>
+      An element that is larger than the viewport and is masked should not mess up the size of the visual regression
+      fixture size.
+    </h3>
+    <div class="mask" style="border: 5px dotted deepskyblue; background: aqua; padding: 20px; margin: 20px -10px"></div>
+  </body>
 </html>
