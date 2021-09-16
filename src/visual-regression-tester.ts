@@ -6,8 +6,8 @@ import {
   Browser,
   ClickOptions,
   ElementHandle,
-  PuppeteerLifeCycleEvent,
   Page,
+  PuppeteerLifeCycleEvent,
 } from "puppeteer";
 
 export interface VisualRegressionTestOptions {
@@ -235,13 +235,18 @@ export class VisualRegressionTester {
     maskSelectors: string[]
   ): Promise<Jimp> {
     const buffer = await (elementSelector
-      ? (await this.page.$(elementSelector)).screenshot()
-      : ((this.page.screenshot({
+      ? ((
+          await this.page.$(elementSelector)
+        ).screenshot({
+          captureBeyondViewport: false,
+        }) as unknown as Promise<string>)
+      : (this.page.screenshot({
           fullPage: true,
-        }) as unknown) as Promise<string>));
+          captureBeyondViewport: false,
+        }) as unknown as Promise<string>));
 
     let image: Jimp;
-    image = await Jimp.read(buffer as string);
+    image = await Jimp.read(buffer);
     image = await this.maskSnapshot(image, elementSelector, maskSelectors);
 
     return image;
