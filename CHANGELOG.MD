@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [4.1.0] - 2021-09-16
+
+### Changed
+
+- Updated npm dependencies
+- Output failed viewports
+- Export `TestOptions` type
+
 ## [4.0.0] - 2021-06-03
 
 ### Changed

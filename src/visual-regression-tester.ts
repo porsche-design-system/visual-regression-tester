@@ -3,7 +3,7 @@ import * as del from 'del';
 import * as fs from 'fs';
 import { BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 
-export interface VisualRegressionTestOptions {
+export type VisualRegressionTestOptions = {
   viewports?: number[];
   deviceScaleFactor?: number;
   fixturesDir?: string;
@@ -13,13 +13,13 @@ export interface VisualRegressionTestOptions {
   timeout?: number;
   mode?: 'auto' | 'square-auto';
   waitUntilMethod?: PuppeteerLifeCycleEvent;
-}
+};
 
-interface TestOptions {
+export type TestOptions = {
   elementSelector?: string;
   maskSelectors?: string[];
   regressionSuffix?: string;
-}
+};
 
 export class VisualRegressionTester {
   private options: VisualRegressionTestOptions = {
