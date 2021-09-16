@@ -112,7 +112,7 @@ describe('Visual-Regression-Test Tester', () => {
       expect(await visualRegressionTester.test('test-page-waits-for-user-interaction-and-network-requests-hover', async () => {
         await visualRegressionTester.goTo('/test-page-waits-for-user-interaction-and-network-requests.html');
         await visualRegressionTester.hover('button', 2000);
-        await visualRegressionTester.getPage().waitFor(100);
+        await visualRegressionTester.getPage().waitForTimeout(100);
       })).toBeFalsy();
     });
 
