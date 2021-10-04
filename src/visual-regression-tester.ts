@@ -1,5 +1,6 @@
 import * as Jimp from 'jimp/dist';
 import * as fs from 'fs';
+import * as path from 'path';
 import { BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 
 export type VisualRegressionTestOptions = {
@@ -257,6 +258,12 @@ export class VisualRegressionTester {
   }
 
   private cleanSnapshots(paths: string[]): void {
-    paths.forEach(fs.unlinkSync);
+    paths
+      .map((p) => path.resolve(__dirname, p))
+      .forEach((file) => {
+        if (fs.existsSync(file)) {
+          fs.unlinkSync(file);
+        }
+      });
   }
 }
