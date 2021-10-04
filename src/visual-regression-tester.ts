@@ -1,5 +1,4 @@
 import * as Jimp from 'jimp/dist';
-import * as del from 'del';
 import * as fs from 'fs';
 import { BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 
@@ -108,7 +107,7 @@ export class VisualRegressionTester {
 
       this.page = await this.newPage(viewport);
 
-      await this.cleanSnapshots([paths.regression, paths.diff]);
+      this.cleanSnapshots([paths.regression, paths.diff]);
 
       await scenario();
 
@@ -260,7 +259,7 @@ export class VisualRegressionTester {
     };
   }
 
-  private async cleanSnapshots(paths: string[]): Promise<void> {
-    await del(paths);
+  private cleanSnapshots(paths: string[]): void {
+    paths.forEach(fs.unlinkSync);
   }
 }
