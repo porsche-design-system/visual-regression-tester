@@ -1,7 +1,7 @@
-import * as Jimp from 'jimp/dist';
 import * as fs from 'fs';
 import * as path from 'path';
 import { BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
+import sharp from 'sharp';
 
 export type VisualRegressionTestOptions = {
   viewports?: number[];
@@ -41,7 +41,6 @@ export class VisualRegressionTester {
       ...options,
     };
   }
-
   getPage(): Page {
     return this.page;
   }
@@ -86,6 +85,8 @@ export class VisualRegressionTester {
   }
 
   async test(snapshotId: string, scenario: Function, options?: TestOptions): Promise<boolean> {
+    sharp.cache(false);
+
     const opts: TestOptions = {
       elementSelector: '',
       maskSelectors: [],
@@ -120,17 +121,17 @@ export class VisualRegressionTester {
       });
 
       if (fs.existsSync(paths.reference)) {
-        const reference = await Jimp.read(paths.reference);
-        const regression = await this.compareSnapshots(reference, opts.elementSelector, opts.maskSelectors);
+        const fixture = sharp(path.resolve(__dirname, '..', paths.reference));
+        const regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors);
 
         if (regression) {
           errors.push(viewport);
-          regression.image.write(paths.regression);
-          regression.diff.write(paths.diff);
+          await regression.image.toFile(paths.regression);
+          await regression.diff.toFile(paths.diff);
         }
       } else {
         const reference = await this.createSnapshot(opts.elementSelector, opts.maskSelectors);
-        reference.write(paths.reference);
+        await reference.toFile(paths.reference);
       }
 
       await this.page.close();
@@ -191,7 +192,7 @@ export class VisualRegressionTester {
     return page;
   }
 
-  private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
+  private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<sharp.Sharp> {
     const buffer = await (elementSelector
       ? ((
           await this.page.$(elementSelector)
@@ -203,25 +204,38 @@ export class VisualRegressionTester {
           captureBeyondViewport: false,
         }) as unknown as Promise<string>));
 
-    const rawImage = await Jimp.read(buffer);
+    const rawImage = sharp(buffer);
 
     return maskSelectors.length ? await this.maskSnapshot(rawImage, elementSelector, maskSelectors) : rawImage;
   }
 
-  private async maskSnapshot(image: Jimp, elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
+  private async maskSnapshot(
+    image: sharp.Sharp,
+    elementSelector: string,
+    maskSelectors: string[]
+  ): Promise<sharp.Sharp> {
+    const boundingBoxes: BoundingBox[] = [];
+
     for (const maskSelector of maskSelectors) {
       const elements = await this.page.$$(`${elementSelector} ${maskSelector}`);
 
       for (const element of elements) {
         const boundingBox = await this.getBoundingBox(element);
         if (boundingBox !== null) {
-          const { width, height, x, y } = boundingBox;
-          const mask = new Jimp(width, height, '#FF00FF');
-
-          image = image.composite(mask, x, y);
+          boundingBoxes.push(boundingBox);
         }
       }
     }
+
+    image.composite(
+      boundingBoxes.map(({ width, height, x, y }) => ({
+        input: {
+          create: { width: Math.ceil(width), height: Math.ceil(height), channels: 3, background: '#FF00FF' },
+        },
+        left: Math.floor(x),
+        top: Math.floor(y),
+      }))
+    );
 
     return image;
   }
@@ -242,24 +256,25 @@ export class VisualRegressionTester {
   }
 
   private async compareSnapshots(
-    reference: Jimp,
+    fixture: sharp.Sharp,
     elementSelector: string,
     maskSelectors: string[]
-  ): Promise<{ image: Jimp; diff: Jimp }> {
+  ): Promise<{ image: sharp.Sharp; diff: sharp.Sharp }> {
     const image = await this.createSnapshot(elementSelector, maskSelectors);
-    const diff = Jimp.diff(reference, image, this.options.tolerance);
+    const imageBuffer = await image.toBuffer();
+    const fixtureBuffer = await fixture.toBuffer();
 
-    return diff.percent === 0
+    return imageBuffer.compare(fixtureBuffer) === 0
       ? null
       : {
           image: image,
-          diff: diff.image,
+          diff: fixture.composite([{ input: fixtureBuffer, blend: 'overlay' }]).negate({ alpha: false }),
         };
   }
 
   private cleanSnapshots(paths: string[]): void {
     paths
-      .map((p) => path.resolve(__dirname, p))
+      .map((p) => path.resolve(__dirname, '..', p))
       .forEach((file) => {
         if (fs.existsSync(file)) {
           fs.unlinkSync(file);
