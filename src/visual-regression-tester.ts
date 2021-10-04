@@ -203,9 +203,8 @@ export class VisualRegressionTester {
         }) as unknown as Promise<string>));
 
     const rawImage = await Jimp.read(buffer);
-    const maskedImage = await this.maskSnapshot(rawImage, elementSelector, maskSelectors);
 
-    return maskedImage;
+    return maskSelectors.length ? await this.maskSnapshot(rawImage, elementSelector, maskSelectors) : rawImage;
   }
 
   private async maskSnapshot(image: Jimp, elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
