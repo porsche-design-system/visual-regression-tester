@@ -202,7 +202,7 @@ export class VisualRegressionTester {
           captureBeyondViewport: false,
         }) as unknown as Promise<string>));
 
-    const rawImage = await Jimp.read(buffer as string);
+    const rawImage = await Jimp.read(buffer);
     const maskedImage = await this.maskSnapshot(rawImage, elementSelector, maskSelectors);
 
     return maskedImage;
@@ -249,14 +249,12 @@ export class VisualRegressionTester {
     const image = await this.createSnapshot(elementSelector, maskSelectors);
     const diff = Jimp.diff(reference, image, this.options.tolerance);
 
-    if (diff.percent === 0) {
-      return null;
-    }
-
-    return {
-      image: image,
-      diff: diff.image,
-    };
+    return diff.percent === 0
+      ? null
+      : {
+          image: image,
+          diff: diff.image,
+        };
   }
 
   private cleanSnapshots(paths: string[]): void {
