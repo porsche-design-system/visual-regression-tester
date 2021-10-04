@@ -135,7 +135,7 @@ export class VisualRegressionTester {
       await this.page.close();
     }
 
-    if (errors.length) {
+    if (this.options.viewports.length > 1 && errors.length) {
       console.log('Failed viewports:', errors.join(', '));
     }
 
