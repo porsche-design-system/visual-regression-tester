@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 import sharp from 'sharp';
+import pixelmatch from 'pixelmatch';
 
 export type VisualRegressionTestOptions = {
   viewports?: number[];
@@ -126,7 +127,7 @@ export class VisualRegressionTester {
 
         if (regression) {
           errors.push(viewport);
-          await regression.image.toFile(paths.regression);
+          await regression.result.toFile(paths.regression);
           await regression.diff.toFile(paths.diff);
         }
       } else {
@@ -259,17 +260,34 @@ export class VisualRegressionTester {
     fixture: sharp.Sharp,
     elementSelector: string,
     maskSelectors: string[]
-  ): Promise<{ image: sharp.Sharp; diff: sharp.Sharp }> {
-    const image = await this.createSnapshot(elementSelector, maskSelectors);
-    const imageBuffer = await image.toBuffer();
-    const fixtureBuffer = await fixture.toBuffer();
+  ): Promise<{ result: sharp.Sharp; diff: sharp.Sharp }> {
+    const result = await this.createSnapshot(elementSelector, maskSelectors);
+    const resultClone = result.clone();
+    const { info: resultInfo, data: resultData } = await result.raw().toBuffer({ resolveWithObject: true });
+    const { info: fixtureInfo, data: fixtureData } = await fixture.raw().toBuffer({ resolveWithObject: true });
 
-    return imageBuffer.compare(fixtureBuffer) === 0
-      ? null
-      : {
-          image: image,
-          diff: fixture.composite([{ input: fixtureBuffer, blend: 'overlay' }]).negate({ alpha: false }),
-        };
+    if (resultData.compare(fixtureData) !== 0) {
+      const { height: resultHeight, width: resultWidth } = resultInfo;
+      const { height: fixtureHeight } = fixtureInfo;
+
+      if (resultHeight > fixtureHeight) {
+        fixture.extend({
+          bottom: resultHeight - fixtureHeight,
+        });
+      }
+
+      const diff = resultData;
+      const fixtureRaw = await fixture.toBuffer();
+
+      pixelmatch(resultData, fixtureRaw, diff, resultWidth, resultHeight, {
+        threshold: this.options.tolerance,
+      });
+
+      return {
+        result: resultClone,
+        diff: sharp(diff, { raw: resultInfo }),
+      };
+    }
   }
 
   private cleanSnapshots(paths: string[]): void {
