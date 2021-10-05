@@ -279,14 +279,19 @@ export class VisualRegressionTester {
       const diff = resultData;
       const fixtureRaw = await fixture.toBuffer();
 
-      pixelmatch(resultData, fixtureRaw, diff, resultWidth, resultHeight, {
+      const pixelDiff = pixelmatch(resultData, fixtureRaw, diff, resultWidth, resultHeight, {
         threshold: this.options.tolerance,
       });
 
-      return {
-        result: resultClone,
-        diff: sharp(diff, { raw: resultInfo }),
-      };
+      // To avoid breaking changes we need to calculate the threshold like it was with Jimp
+      const percent = pixelDiff / (resultWidth * resultHeight);
+
+      if (percent !== 0) {
+        return {
+          result: resultClone,
+          diff: sharp(diff, { raw: resultInfo }),
+        };
+      }
     }
   }
 
