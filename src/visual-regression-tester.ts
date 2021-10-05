@@ -121,7 +121,7 @@ export class VisualRegressionTester {
       });
 
       if (fs.existsSync(paths.reference)) {
-        const fixture = sharp(path.resolve(__dirname, '..', paths.reference));
+        const fixture = sharp(path.resolve(paths.reference));
         const regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors);
 
         if (regression) {
@@ -274,7 +274,7 @@ export class VisualRegressionTester {
 
   private cleanSnapshots(paths: string[]): void {
     paths
-      .map((p) => path.resolve(__dirname, '..', p))
+      .map((p) => path.resolve(p))
       .forEach((file) => {
         if (fs.existsSync(file)) {
           fs.unlinkSync(file);
