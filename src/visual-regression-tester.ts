@@ -22,6 +22,10 @@ export type TestOptions = {
   regressionSuffix?: string;
 };
 
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+type WritableDomRect = Writeable<Omit<DOMRect, 'toJson'>>;
+
 export class VisualRegressionTester {
   private options: VisualRegressionTestOptions = {
     viewports: [320, 480, 760, 1000, 1300, 1760],
@@ -215,45 +219,88 @@ export class VisualRegressionTester {
     elementSelector: string,
     maskSelectors: string[]
   ): Promise<sharp.Sharp> {
-    const boundingBoxes: BoundingBox[] = [];
+    const boundingBoxes: WritableDomRect[] = [];
 
     for (const maskSelector of maskSelectors) {
-      const elements = await this.page.$$(`${elementSelector} ${maskSelector}`);
+      const maskElements = await this.page.$$(`${elementSelector} ${maskSelector}`);
 
-      for (const element of elements) {
-        const boundingBox = await this.getBoundingBox(element);
+      for (const maskElement of maskElements) {
+        const boundingBox = await this.getBoundingBox(maskElement);
         if (boundingBox !== null) {
           boundingBoxes.push(boundingBox);
         }
       }
     }
 
+    const { width: imageWidth, height: imageHeight } = await image.metadata();
+    const elementBoundingBox: WritableDomRect = elementSelector
+      ? await this.getBoundingBox(await this.page.$(elementSelector))
+      : ({
+          left: 0,
+          right: imageWidth,
+          top: 0,
+          height: imageHeight,
+          width: imageWidth,
+          bottom: imageHeight,
+          x: 0,
+          y: 0,
+        } as WritableDomRect);
+
     image.composite(
-      boundingBoxes.map(({ width, height, x, y }) => ({
-        input: {
-          create: { width: Math.ceil(width), height: Math.ceil(height), channels: 3, background: '#FF00FF' },
-        },
-        left: Math.floor(x),
-        top: Math.floor(y),
-      }))
+      boundingBoxes.map((maskBoundingBox) => {
+        if (maskBoundingBox.right > elementBoundingBox.right) {
+          maskBoundingBox.width = maskBoundingBox.width - (maskBoundingBox.right - elementBoundingBox.right);
+        }
+
+        if (maskBoundingBox.bottom > elementBoundingBox.bottom) {
+          maskBoundingBox.height = maskBoundingBox.height - (maskBoundingBox.bottom - elementBoundingBox.bottom);
+        }
+
+        if (maskBoundingBox.left < elementBoundingBox.left) {
+          maskBoundingBox.width = maskBoundingBox.width - (elementBoundingBox.left - maskBoundingBox.left);
+          maskBoundingBox.left = 0;
+        }
+
+        if (maskBoundingBox.top < elementBoundingBox.top) {
+          maskBoundingBox.height = maskBoundingBox.height - (elementBoundingBox.top - maskBoundingBox.top);
+          maskBoundingBox.top = 0;
+        }
+
+        return {
+          input: {
+            create: {
+              width: maskBoundingBox.width,
+              height: maskBoundingBox.height,
+              channels: 3,
+              background: '#FF00FF',
+            },
+          },
+          left: maskBoundingBox.left,
+          top: maskBoundingBox.top,
+        };
+      })
     );
 
     return image;
   }
 
-  private async getBoundingBox(element: ElementHandle, extendOuterBounds: number = 1): Promise<BoundingBox> {
-    const boundingBox = await element.boundingBox();
+  private async getBoundingBox(element: ElementHandle, extendOuterBounds: number = 1): Promise<WritableDomRect> {
+    const boundingBox = await element.evaluate((el) => {
+      const { width, height, left, right, top, bottom } = el.getBoundingClientRect();
+      return { width, height, left, right, top, bottom } as WritableDomRect;
+    });
 
     if (boundingBox !== null) {
       return {
-        width: boundingBox.width + extendOuterBounds * 2,
-        height: boundingBox.height + extendOuterBounds * 2,
-        x: boundingBox.x - extendOuterBounds,
-        y: boundingBox.y - extendOuterBounds,
+        ...boundingBox,
+        width: Math.ceil(boundingBox.width + extendOuterBounds * 2),
+        height: Math.ceil(boundingBox.height + extendOuterBounds * 2),
+        left: Math.floor(boundingBox.left - extendOuterBounds),
+        right: Math.ceil(boundingBox.right + extendOuterBounds),
+        top: Math.floor(boundingBox.top - extendOuterBounds),
+        bottom: Math.ceil(boundingBox.bottom + extendOuterBounds),
       };
     }
-
-    return null;
   }
 
   private async compareSnapshots(
