@@ -230,7 +230,7 @@ export class VisualRegressionTester {
 
       for (const maskElement of maskElements) {
         const boundingBox = await this.getBoundingBox(maskElement);
-        if (boundingBox !== null) {
+        if (boundingBox) {
           boundingBoxes.push(boundingBox);
         }
       }
@@ -238,7 +238,7 @@ export class VisualRegressionTester {
 
     const { width: imageWidth, height: imageHeight } = await image.metadata();
     const elementBoundingBox: WritableDomRect = elementSelector
-      ? await this.getBoundingBox(await this.page.$(elementSelector))
+      ? await this.getBoundingBox(await this.page.$(elementSelector), 0)
       : ({
           left: 0,
           right: imageWidth,
@@ -294,7 +294,7 @@ export class VisualRegressionTester {
       return { width, height, left, right, top, bottom } as WritableDomRect;
     });
 
-    if (boundingBox !== null) {
+    if (boundingBox !== null && boundingBox.width !== 0 && boundingBox.height !== 0) {
       return {
         ...boundingBox,
         width: Math.ceil(boundingBox.width + extendOuterBounds * 2),
