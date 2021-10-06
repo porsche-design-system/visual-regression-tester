@@ -130,9 +130,7 @@ export class VisualRegressionTester {
         const regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors);
 
         if (regression) {
-          if (!fs.existsSync(path.resolve(this.options.resultsDir))) {
-            fs.mkdirSync(path.resolve(this.options.resultsDir));
-          }
+          fs.mkdirSync(path.resolve(this.options.resultsDir), { recursive: true });
 
           errors.push(viewport);
           await regression.result.toFile(paths.regression);
