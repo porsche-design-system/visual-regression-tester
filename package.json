@@ -1,6 +1,6 @@
 {
   "name": "@porsche-design-system/visual-regression-tester",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "scope": "@porsche-design-system",
   "author": "Dr. Ing. h.c. F. Porsche AG",
   "contributors": [
@@ -38,13 +38,14 @@
     "test": "concurrently -k -s 'first' -n 'server,test' 'yarn start' 'wait-on -t 30000 http-get://localhost:61423 && ts-node --project tests/config/tsconfig.json node_modules/.bin/jasmine --config=tests/config/jasmine.config.json'"
   },
   "dependencies": {
-    "del": "^6.0.0",
-    "jimp": "^0.16.1"
+    "pixelmatch": "^5.2.1",
+    "sharp": "^0.29.1"
   },
   "devDependencies": {
     "@porsche-design-system/prettier-config": "^1.0.0",
-    "@types/del": "^4.0.0",
     "@types/jasmine": "^3.9.1",
+    "@types/pixelmatch": "^5.2.4",
+    "@types/sharp": "^0.29.2",
     "concurrently": "^6.2.1",
     "http-server": "^13.0.2",
     "jasmine": "^3.9.0",

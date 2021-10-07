@@ -1,7 +1,8 @@
-import * as Jimp from 'jimp/dist';
-import * as del from 'del';
 import * as fs from 'fs';
+import * as path from 'path';
 import { BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
+import sharp from 'sharp';
+import pixelmatch from 'pixelmatch';
 
 export type VisualRegressionTestOptions = {
   viewports?: number[];
@@ -20,6 +21,10 @@ export type TestOptions = {
   maskSelectors?: string[];
   regressionSuffix?: string;
 };
+
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+type WritableDomRect = Writeable<Omit<DOMRect, 'toJson'>>;
 
 export class VisualRegressionTester {
   private options: VisualRegressionTestOptions = {
@@ -41,7 +46,6 @@ export class VisualRegressionTester {
       ...options,
     };
   }
-
   getPage(): Page {
     return this.page;
   }
@@ -86,6 +90,8 @@ export class VisualRegressionTester {
   }
 
   async test(snapshotId: string, scenario: Function, options?: TestOptions): Promise<boolean> {
+    sharp.cache(false);
+
     const opts: TestOptions = {
       elementSelector: '',
       maskSelectors: [],
@@ -108,7 +114,7 @@ export class VisualRegressionTester {
 
       this.page = await this.newPage(viewport);
 
-      await this.cleanSnapshots([paths.regression, paths.diff]);
+      this.cleanSnapshots([paths.regression, paths.diff]);
 
       await scenario();
 
@@ -120,23 +126,25 @@ export class VisualRegressionTester {
       });
 
       if (fs.existsSync(paths.reference)) {
-        const reference = await Jimp.read(paths.reference);
-        const regression = await this.compareSnapshots(reference, opts.elementSelector, opts.maskSelectors);
+        const fixture = sharp(path.resolve(paths.reference));
+        const regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors);
 
         if (regression) {
+          fs.mkdirSync(path.resolve(this.options.resultsDir), { recursive: true });
+
           errors.push(viewport);
-          regression.image.write(paths.regression);
-          regression.diff.write(paths.diff);
+          await regression.result.toFile(paths.regression);
+          await regression.diff.toFile(paths.diff);
         }
       } else {
         const reference = await this.createSnapshot(opts.elementSelector, opts.maskSelectors);
-        reference.write(paths.reference);
+        await reference.toFile(paths.reference);
       }
 
       await this.page.close();
     }
 
-    if (errors.length) {
+    if (this.options.viewports.length > 1 && errors.length) {
       console.log('Failed viewports:', errors.join(', '));
     }
 
@@ -191,7 +199,7 @@ export class VisualRegressionTester {
     return page;
   }
 
-  private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
+  private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<sharp.Sharp> {
     const buffer = await (elementSelector
       ? ((
           await this.page.$(elementSelector)
@@ -203,64 +211,181 @@ export class VisualRegressionTester {
           captureBeyondViewport: false,
         }) as unknown as Promise<string>));
 
-    const rawImage = await Jimp.read(buffer as string);
-    const maskedImage = await this.maskSnapshot(rawImage, elementSelector, maskSelectors);
+    const rawImage = sharp(buffer);
 
-    return maskedImage;
+    return maskSelectors.length ? await this.maskSnapshot(rawImage, elementSelector, maskSelectors) : rawImage;
   }
 
-  private async maskSnapshot(image: Jimp, elementSelector: string, maskSelectors: string[]): Promise<Jimp> {
+  private async maskSnapshot(
+    image: sharp.Sharp,
+    elementSelector: string,
+    maskSelectors: string[]
+  ): Promise<sharp.Sharp> {
+    // BoundingBoxes of Mask elements
+    const boundingBoxes: WritableDomRect[] = [];
+
     for (const maskSelector of maskSelectors) {
-      const elements = await this.page.$$(`${elementSelector} ${maskSelector}`);
+      const maskElements = await this.page.$$(`${elementSelector} ${maskSelector}`);
 
-      for (const element of elements) {
-        const boundingBox = await this.getBoundingBox(element);
-        if (boundingBox !== null) {
-          const { width, height, x, y } = boundingBox;
-          const mask = new Jimp(width, height, '#FF00FF');
-
-          image = image.composite(mask, x, y);
+      for (const maskElement of maskElements) {
+        const boundingBox = await this.getBoundingBox(maskElement);
+        if (boundingBox) {
+          boundingBoxes.push(boundingBox);
         }
       }
     }
 
+    const { width: imageWidth, height: imageHeight } = await image.metadata();
+    // BoundingBox of Element to screenshot
+    const elementBoundingBox: WritableDomRect = elementSelector
+      ? await this.getBoundingBox(await this.page.$(elementSelector), 0)
+      : ({
+          left: 0,
+          right: imageWidth,
+          top: 0,
+          height: imageHeight,
+          width: imageWidth,
+          bottom: imageHeight,
+          x: 0,
+          y: 0,
+        } as WritableDomRect);
+
+    image.composite(
+      boundingBoxes.map((maskBoundingBox) => {
+        // Adjust the size of the mask to fit in the area of the screenshot
+        // ┌────────────┐
+        // │ ┌────────┐ │
+        // │ │  ┌─────┼─┤
+        // │ │  │Mask │┼│
+        // │ │  └─────┼─┤
+        // │ └────────┘ │
+        // └────────────┘
+
+        if (maskBoundingBox.right > elementBoundingBox.right) {
+          maskBoundingBox.width = maskBoundingBox.width - (maskBoundingBox.right - elementBoundingBox.right);
+        }
+
+        // ┌────────────┐
+        // │ ┌────────┐ │
+        // │ │ ┌────┐ │ │
+        // │ │ │Mask│ │ │
+        // │ └─┼────┼─┘ │
+        // │   │┼┼┼┼│   │
+        // └───┴────┴───┘
+
+        if (maskBoundingBox.bottom > elementBoundingBox.bottom) {
+          maskBoundingBox.height = maskBoundingBox.height - (maskBoundingBox.bottom - elementBoundingBox.bottom);
+        }
+
+        // ┌────────────┐
+        // │ ┌────────┐ │
+        // ├─┼─────┐  │ │
+        // │┼│Mask │  │ │
+        // ├─┼─────┘  │ │
+        // │ └────────┘ │
+        // └────────────┘
+
+        if (maskBoundingBox.left < elementBoundingBox.left) {
+          maskBoundingBox.width = maskBoundingBox.width - (elementBoundingBox.left - maskBoundingBox.left);
+          maskBoundingBox.left = 0;
+        }
+
+        // ┌───┬────┬───┐
+        // │   │┼┼┼┼│   │
+        // │ ┌─┼────┼─┐ │
+        // │ │ │Mask│ │ │
+        // │ │ └────┘ │ │
+        // │ └────────┘ │
+        // └────────────┘
+
+        if (maskBoundingBox.top < elementBoundingBox.top) {
+          maskBoundingBox.height = maskBoundingBox.height - (elementBoundingBox.top - maskBoundingBox.top);
+          maskBoundingBox.top = 0;
+        }
+
+        return {
+          input: {
+            create: {
+              width: maskBoundingBox.width,
+              height: maskBoundingBox.height,
+              channels: 3,
+              background: '#FF00FF',
+            },
+          },
+          left: maskBoundingBox.left,
+          top: maskBoundingBox.top,
+        };
+      })
+    );
+
     return image;
   }
 
-  private async getBoundingBox(element: ElementHandle, extendOuterBounds: number = 1): Promise<BoundingBox> {
-    const boundingBox = await element.boundingBox();
+  private async getBoundingBox(element: ElementHandle, extendOuterBounds: number = 1): Promise<WritableDomRect> {
+    const boundingBox = await element.evaluate((el) => {
+      const { width, height, left, right, top, bottom } = el.getBoundingClientRect();
+      return { width, height, left, right, top, bottom } as WritableDomRect;
+    });
 
-    if (boundingBox !== null) {
+    if (boundingBox !== null && boundingBox.width !== 0 && boundingBox.height !== 0) {
       return {
-        width: boundingBox.width + extendOuterBounds * 2,
-        height: boundingBox.height + extendOuterBounds * 2,
-        x: boundingBox.x - extendOuterBounds,
-        y: boundingBox.y - extendOuterBounds,
+        ...boundingBox,
+        width: Math.ceil(boundingBox.width + extendOuterBounds * 2),
+        height: Math.ceil(boundingBox.height + extendOuterBounds * 2),
+        left: Math.floor(boundingBox.left - extendOuterBounds),
+        right: Math.ceil(boundingBox.right + extendOuterBounds),
+        top: Math.floor(boundingBox.top - extendOuterBounds),
+        bottom: Math.ceil(boundingBox.bottom + extendOuterBounds),
       };
     }
-
-    return null;
   }
 
   private async compareSnapshots(
-    reference: Jimp,
+    fixture: sharp.Sharp,
     elementSelector: string,
     maskSelectors: string[]
-  ): Promise<{ image: Jimp; diff: Jimp }> {
-    const image = await this.createSnapshot(elementSelector, maskSelectors);
-    const diff = Jimp.diff(reference, image, this.options.tolerance);
+  ): Promise<{ result: sharp.Sharp; diff: sharp.Sharp }> {
+    const result = await this.createSnapshot(elementSelector, maskSelectors);
+    const resultClone = result.clone();
+    const { info: resultInfo, data: resultData } = await result.raw().toBuffer({ resolveWithObject: true });
+    const { info: fixtureInfo, data: fixtureData } = await fixture.raw().toBuffer({ resolveWithObject: true });
 
-    if (diff.percent === 0) {
-      return null;
+    if (resultData.compare(fixtureData) !== 0) {
+      const { height: resultHeight, width: resultWidth } = resultInfo;
+      const { height: fixtureHeight } = fixtureInfo;
+
+      if (resultHeight > fixtureHeight) {
+        fixture.extend({
+          bottom: resultHeight - fixtureHeight,
+        });
+      }
+
+      const diff = resultData;
+      const fixtureRaw = await fixture.toBuffer();
+
+      const pixelDiff = pixelmatch(resultData, fixtureRaw, diff, resultWidth, resultHeight, {
+        threshold: this.options.tolerance,
+      });
+
+      // To avoid breaking changes we need to calculate the threshold like it was with Jimp
+      const percent = pixelDiff / (resultWidth * resultHeight);
+
+      if (percent !== 0) {
+        return {
+          result: resultClone,
+          diff: sharp(diff, { raw: resultInfo }),
+        };
+      }
     }
-
-    return {
-      image: image,
-      diff: diff.image,
-    };
   }
 
-  private async cleanSnapshots(paths: string[]): Promise<void> {
-    await del(paths);
+  private cleanSnapshots(paths: string[]): void {
+    paths
+      .map((p) => path.resolve(p))
+      .forEach((file) => {
+        if (fs.existsSync(file)) {
+          fs.unlinkSync(file);
+        }
+      });
   }
 }
