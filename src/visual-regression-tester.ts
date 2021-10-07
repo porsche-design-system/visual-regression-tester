@@ -221,6 +221,7 @@ export class VisualRegressionTester {
     elementSelector: string,
     maskSelectors: string[]
   ): Promise<sharp.Sharp> {
+    // BoundingBoxes of Mask elements
     const boundingBoxes: WritableDomRect[] = [];
 
     for (const maskSelector of maskSelectors) {
@@ -235,6 +236,7 @@ export class VisualRegressionTester {
     }
 
     const { width: imageWidth, height: imageHeight } = await image.metadata();
+    // BoundingBox of Element to screenshot
     const elementBoundingBox: WritableDomRect = elementSelector
       ? await this.getBoundingBox(await this.page.$(elementSelector), 0)
       : ({
@@ -250,18 +252,51 @@ export class VisualRegressionTester {
 
     image.composite(
       boundingBoxes.map((maskBoundingBox) => {
+        // Adjust the size of the mask to fit in the area of the screenshot
+        // ┌────────────┐
+        // │ ┌────────┐ │
+        // │ │  ┌─────┼─┤
+        // │ │  │Mask │┼│
+        // │ │  └─────┼─┤
+        // │ └────────┘ │
+        // └────────────┘
+
         if (maskBoundingBox.right > elementBoundingBox.right) {
           maskBoundingBox.width = maskBoundingBox.width - (maskBoundingBox.right - elementBoundingBox.right);
         }
+
+        // ┌────────────┐
+        // │ ┌────────┐ │
+        // │ │ ┌────┐ │ │
+        // │ │ │Mask│ │ │
+        // │ └─┼────┼─┘ │
+        // │   │┼┼┼┼│   │
+        // └───┴────┴───┘
 
         if (maskBoundingBox.bottom > elementBoundingBox.bottom) {
           maskBoundingBox.height = maskBoundingBox.height - (maskBoundingBox.bottom - elementBoundingBox.bottom);
         }
 
+        // ┌────────────┐
+        // │ ┌────────┐ │
+        // ├─┼─────┐  │ │
+        // │┼│Mask │  │ │
+        // ├─┼─────┘  │ │
+        // │ └────────┘ │
+        // └────────────┘
+
         if (maskBoundingBox.left < elementBoundingBox.left) {
           maskBoundingBox.width = maskBoundingBox.width - (elementBoundingBox.left - maskBoundingBox.left);
           maskBoundingBox.left = 0;
         }
+
+        // ┌───┬────┬───┐
+        // │   │┼┼┼┼│   │
+        // │ ┌─┼────┼─┐ │
+        // │ │ │Mask│ │ │
+        // │ │ └────┘ │ │
+        // │ └────────┘ │
+        // └────────────┘
 
         if (maskBoundingBox.top < elementBoundingBox.top) {
           maskBoundingBox.height = maskBoundingBox.height - (elementBoundingBox.top - maskBoundingBox.top);
