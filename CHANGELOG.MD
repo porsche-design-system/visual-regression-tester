@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Result dimension if size is smaller than fixture
+- Exception if result image is smaller than fixture image
 
 ## [4.2.0] - 2021-10-06
 
