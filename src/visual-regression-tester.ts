@@ -347,17 +347,26 @@ export class VisualRegressionTester {
   ): Promise<{ result: sharp.Sharp; diff: sharp.Sharp }> {
     const result = await this.createSnapshot(elementSelector, maskSelectors);
     const resultClone = result.clone();
-    const { info: resultInfo, data: resultData } = await result.raw().toBuffer({ resolveWithObject: true });
+    let { info: resultInfo, data: resultData } = await result.raw().toBuffer({ resolveWithObject: true });
     const { info: fixtureInfo, data: fixtureData } = await fixture.raw().toBuffer({ resolveWithObject: true });
 
     if (resultData.compare(fixtureData) !== 0) {
-      const { height: resultHeight, width: resultWidth } = resultInfo;
+      let { height: resultHeight, width: resultWidth } = resultInfo;
       const { height: fixtureHeight } = fixtureInfo;
 
       if (resultHeight > fixtureHeight) {
         fixture.extend({
           bottom: resultHeight - fixtureHeight,
         });
+      } else if (resultHeight < fixtureHeight) {
+        result.extend({
+          bottom: fixtureHeight - resultHeight,
+        });
+
+        const resultInfoData = await result.raw().toBuffer({ resolveWithObject: true });
+        resultInfo = resultInfoData.info;
+        resultData = resultInfoData.data;
+        resultHeight = resultInfo.height;
       }
 
       const diff = resultData;
