@@ -16,6 +16,18 @@ describe('Visual-Regression-Test Tester', () => {
     ).toBeFalsy();
   });
 
+  it('should have visual regression for test page if page content is removed', async () => {
+    expect(
+      await visualRegressionTester.test('test-page-unmasked-original-shortened', async () => {
+        await visualRegressionTester.goTo('/test-page-original.html');
+        const page = visualRegressionTester.getPage();
+        await page.evaluate(() => {
+          document.querySelector('p').remove();
+        });
+      })
+    ).toBeTruthy();
+  });
+
   it('should have visual regression when compared with edited test page', async () => {
     expect(
       await visualRegressionTester.test('test-page-unmasked-edited', async () => {
