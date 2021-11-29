@@ -20,6 +20,7 @@ export type TestOptions = {
   elementSelector?: string;
   maskSelectors?: string[];
   regressionSuffix?: string;
+  initialViewportHeight?: number;
 };
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
@@ -96,6 +97,7 @@ export class VisualRegressionTester {
       elementSelector: '',
       maskSelectors: [],
       regressionSuffix: '',
+      initialViewportHeight: 1,
       ...options,
     };
 
@@ -112,7 +114,7 @@ export class VisualRegressionTester {
         diff: `${resultsDir}/${snapshotId}${suffix}.${viewport}.diff.png`,
       };
 
-      this.page = await this.newPage(viewport);
+      this.page = await this.newPage(viewport, opts.initialViewportHeight);
 
       this.cleanSnapshots([paths.regression, paths.diff]);
 
@@ -187,12 +189,12 @@ export class VisualRegressionTester {
     return new Promise((x) => (fulfill = x));
   }
 
-  private async newPage(viewport: number): Promise<Page> {
+  private async newPage(viewport: number, viewportHeight: number): Promise<Page> {
     const page = await this.browser.newPage();
     page.setDefaultNavigationTimeout(this.options.timeout);
     await page.setViewport({
       width: viewport,
-      height: this.options.mode === 'square-auto' ? viewport : 1,
+      height: this.options.mode === 'square-auto' ? viewport : viewportHeight,
       deviceScaleFactor: this.options.deviceScaleFactor,
     });
 
