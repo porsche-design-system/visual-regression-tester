@@ -16,6 +16,18 @@ describe('Visual-Regression-Test Tester', () => {
     ).toBeFalsy();
   });
 
+  it('should have no visual regression for test page with initial viewport height', async () => {
+    expect(
+      await visualRegressionTester.test(
+        'test-page-initial-viewport-height',
+        async () => {
+          await visualRegressionTester.goTo('/test-page-initial-viewport-height.html');
+        },
+        { initialViewportHeight: 100 }
+      )
+    ).toBeFalsy();
+  });
+
   it('should have visual regression for test page if page content is removed', async () => {
     expect(
       await visualRegressionTester.test('test-page-unmasked-original-shortened', async () => {
