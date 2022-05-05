@@ -8,7 +8,7 @@
     "Christoph Stickel <net.christoph.stickel@mhp.com>",
     "Bernd Hacker <bernd.hacker@mhp.com>"
   ],
-  "license": "SEE LICENSE IN https://designsystem.porsche.com",
+  "license": "SEE LICENSE IN https://designsystem.porsche.com/latest/license",
   "description": "A NPM package that exports functions to create visual regression tests",
   "main": "dist/visual-regression-tester.js",
   "types": "dist/visual-regression-tester.d.ts",
