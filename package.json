@@ -23,14 +23,6 @@
     "test",
     "automation"
   ],
-  "homepage": "https://github.com/porscheui/porsche-visual-regression-tester#readme",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:porscheui/porsche-visual-regression-tester.git"
-  },
-  "publishConfig": {
-    "@porsche-design-system:registry": "https://porscheui.jfrog.io/porscheui/api/npm/npm-local/"
-  },
   "prettier": "@porsche-design-system/prettier-config",
   "scripts": {
     "start": "yarn build && http-server ./tests/pages -p 61423 -s",
