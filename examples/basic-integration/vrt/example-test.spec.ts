@@ -1,5 +1,7 @@
-import { Browser, launch } from 'puppeteer';
-import { VisualRegressionTester, VisualRegressionTestOptions } from '@porsche-design-system/visual-regression-tester';
+import type { Browser } from 'puppeteer';
+import type { VisualRegressionTestOptions } from '@porsche-design-system/visual-regression-tester';
+import puppeteer from 'puppeteer';
+import { VisualRegressionTester } from '@porsche-design-system/visual-regression-tester';
 
 describe('Example integration of visual regression tester', () => {
   let browser: Browser, visualRegressionTester: VisualRegressionTester;
@@ -14,7 +16,7 @@ describe('Example integration of visual regression tester', () => {
 
   beforeAll(async () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
-    browser = await launch();
+    browser = await puppeteer.launch();
     visualRegressionTester = new VisualRegressionTester(browser, testOptions);
   });
 

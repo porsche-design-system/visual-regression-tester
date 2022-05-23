@@ -22,10 +22,10 @@
   },
   "devDependencies": {
     "@porsche-design-system/visual-regression-tester": "^4.0.0",
-    "http-server": "^0.12.3",
-    "jasmine": "^3.6.3",
-    "puppeteer": "^10.0.0",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.3.2"
+    "http-server": "^14.1.0",
+    "jasmine": "^4.1.0",
+    "puppeteer": "^14.1.1",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.6.4"
   }
 }
