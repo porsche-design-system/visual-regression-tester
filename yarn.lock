@@ -48,9 +48,9 @@
     "@hapi/hoek" "^9.0.0"
 
 "@porsche-design-system/prettier-config@^1.0.0":
-  version "1.0.0"
-  resolved "https://porscheui.jfrog.io/porscheui/api/npm/npm/@porsche-design-system/prettier-config/-/@porsche-design-system/prettier-config-1.0.0.tgz#3ab128c42d98cb049ffc0b141362f6963e0a93d7"
-  integrity sha1-OrEoxC2YywSf/AsUE2L2lj4Kk9c=
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@porsche-design-system/prettier-config/-/prettier-config-1.0.1.tgz#6b0fc60d3d42c7b4d9c998bf7b685513a5488400"
+  integrity sha512-IhoHGmsPoO4VBoCebNGejBNHJFdAldV3m8kAoO458MJeaQJODM2b1UFzvGeTXGOMIFH4pkshcjZcF36vQvsn9w==
 
 "@sideway/address@^4.1.0":
   version "4.1.2"
