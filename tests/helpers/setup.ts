@@ -1,5 +1,7 @@
-import { Browser, launch } from 'puppeteer';
-import { VisualRegressionTester, VisualRegressionTestOptions } from '../../src/visual-regression-tester';
+import type { Browser } from 'puppeteer';
+import type { VisualRegressionTestOptions } from '../../src/visual-regression-tester';
+import puppeteer from 'puppeteer';
+import { VisualRegressionTester } from '../../src/visual-regression-tester';
 import { SpecReporter } from 'jasmine-spec-reporter';
 
 let browser: Browser;
@@ -14,13 +16,13 @@ const testOptions: VisualRegressionTestOptions = {
   baseUrl: 'http://localhost:61423',
 };
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 90000;
 
 jasmine.getEnv().clearReporters();
 jasmine.getEnv().addReporter(new SpecReporter());
 
 beforeAll(async () => {
-  browser = await launch({
+  browser = await puppeteer.launch({
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',

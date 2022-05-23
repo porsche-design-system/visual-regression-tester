@@ -1,0 +1,36 @@
+on:
+  push:
+    branches:
+      - master
+name: 'Release Management'
+jobs:
+  build:
+    name: 'Release npm package'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+      - name: 'Cache node_modules'
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: 'Install'
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: ./docker/node/
+        with:
+          entrypoint: run-install
+      - name: 'Build'
+        uses: ./docker/node/
+        with:
+          entrypoint: run-build
+      - name: 'Publish NPM Package'
+        uses: ./docker/node/
+        env:
+          PORSCHE_NPM_REGISTRY_TOKEN: ${{ secrets.PORSCHE_NPM_REGISTRY_TOKEN }}
+          NPMJS_REGISTRY_TOKEN: ${{ secrets.NPMJS_REGISTRY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          entrypoint: run-release-npm
+          args: .

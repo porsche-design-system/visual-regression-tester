@@ -1,111 +1,41 @@
-# Visual Regression Tester
+# Porsche Design System - Visual Regression Tester
 
-A NPM package that exports functions to create visual regression tests
+Export functions to create visual regression tests.
 
-## Setup
+## Using the Visual Regression Tester
 
-### Requirements
+### Installation
 
-* [Node.js](https://nodejs.org)
-* [Yarn](https://yarnpkg.com)
-* [Docker](https://www.docker.com) ([see below](#docker-installation-steps))
+Run the following command using [npm](https://www.npmjs.com):
 
-### Getting started
+```bash
+npm install @porsche-design-system/visual-regression-tester --save-dev
+```
 
-1. Clone [`visual-regression-tester` repository](https://github.com/porscheui/porsche-visual-regression-tester)
-1. Switch to **project root directory**
-1. Checkout branch **master** by executing `git checkout master`
-1. Execute command `npm login --registry=https://porscheui.jfrog.io/porscheui/api/npm/npm/`
-1. Enter username, password (Artifactory API Key, **not** Artifactory password!) and e-mail address when asked in terminal
-1. Execute `cat ~/.npmrc`, find following line `//porscheui.jfrog.io/porscheui/api/npm/npm/:_authToken=` and copy the generated _npm registry token_ from the file to your clipboard
-1. Create an `.env` file within **project root directory** (never push this file to Git because it will contain secrets – by default it's ignored by `.gitignore`)
-1. Add _npm registry token_ in following format `PORSCHE_NPM_REGISTRY_TOKEN=YOUR_TOKEN_GOES_HERE`
-1. Make sure that Docker app is running
+If you prefer [Yarn](https://yarnpkg.com), use the following command instead:
 
-1. Run `./docker.sh run-install` - this may take up to several minutes at first start depending on your internet connection
+```bash
+yarn add @porsche-design-system/visual-regression-tester --dev
+```
 
-_Note: `./docker.sh run-install` should be executed after every pull._
+### Usage
 
-### Setup prettier
-
-1. Go to Webstorm `Preferences`
-1. Click on the Plugins tab and search for `prettier`
-1. Install prettier
-1. In `Preferences` go to `Languages and Frameworks` -> `Javascript` -> `Prettier`
-1. Set `Prettier Package` to `{PATH_TO_YOUR_DIRECTORY}/node_modules/prettier`
-1. Change `Run for files` to `{**/*,*}.{js,ts,jsx,tsx,vue,scss,json,css}`
-1. Click checkbox `on save` and apply
-1. You should be good to go.
-1. If you have to exclude code fom being prettified, see [Prettier configuration](https://prettier.io/docs/en/ignore.html#javascript)
-
-### Docker installation steps
-
-1. Register your Docker account on [Hub-Docker](https://hub.docker.com)
-1. Download Docker app locally on your machine and login
-1. Start Docker
-
-### Start
-
-1. Switch to __project root directory__
-1. Run `./docker.sh run-start` (starts test server for visual-regression-tester itself)
-
-### Build
-
-1. Switch to __project root directory__
-1. Run `./docker.sh run-build` (builds releasable visual-regression-tester npm package)
-
-### Test
-
-1. Switch to __project root directory__
-1. Run `./docker.sh run-test` (executes test for visual-regression-tester)
-
----
-
-## Dependency updates
-
-Every week, we update our NPM packages:
-
-1. Switch to __project root directory__
-1. Run `./docker.sh run-upgrade`
-   This should output the dependencies you might want to update. Select the NPM dependencies to be updated and press
-   _Enter_. Afterwards execute automated tests to make sure application still works.
-1. Run `./docker.sh run-test`
-
----
-
-## Get Visual Regression Tester up & running within in application
-
-__It's highly recommended to execute the visual regression tester within a Docker container to get reliable tests
+__It's highly recommended executing the visual regression tester within a Docker container to get reliable tests
 results across any operating system and machine.__
 
-## Installation
+Check out the [Basic integration example](https://github.com/porscheui/porsche-visual-regression-tester/tree/master/examples/basic-integration) for an example how to get the Visual Regression Tester up and running.
 
-* Be sure that your project is configured to be able to install npm packages from Porsche UI Artifactory instance
-* run `npm install --save-dev @porsche-design-system/visual-regression-tester`
-  or `yarn add --dev @porsche-design-system/visual-regression-tester`
-
-## How to start
-
-Check out
-the [Basic integration example](https://github.com/porscheui/porsche-visual-regression-tester/tree/master/examples/basic-integration)
-for an example how to get the visual regression tester up and running.
-
-## API
-
-### VisualRegressionTester
+### API
 
 #### Constructor
 
-The constructor expects 2 parameters:
+The constructor expects two parameters:
 
 * `browser: Browser`
 * `options: VisualRegressionTestOptions` (_optional_)
 
-Browser should be
-a [Puppeteer Browser instance](https://github.com/GoogleChrome/puppeteer/blob/v1.9.0/docs/api.md#class-browser). Check
-the basic integration example
-for [how to create a Puppeteer browser](https://github.com/porscheui/porsche-visual-regression-tester/blob/master/examples/basic-integration/vrt/example-test.spec.ts#L19)
-.
+Browser should be a [Puppeteer Browser instance](https://github.com/GoogleChrome/puppeteer/blob/v1.9.0/docs/api.md#class-browser).
+Check the basic integration example for [how to create a Puppeteer browser](https://github.com/porscheui/porsche-visual-regression-tester/blob/master/examples/basic-integration/vrt/example-test.spec.ts#L19).
 
 #### test() Method
 
@@ -132,7 +62,7 @@ As a **third and optional parameter** (`options: TestOptions`) you can pass foll
 To make use of Puppeteers Page instance within the `scenario: Function` you call the `getPage()` method and apply any
 supported Puppeteer method like `click()`, `hover()` or `type()`.
 
-### VisualRegressionTestOptions
+#### VisualRegressionTestOptions
 
 * `viewports` selects the viewports of your browser
 * `deviceScaleFactor` specify device scale factor (can be thought of as dpr)
@@ -158,8 +88,6 @@ supported Puppeteer method like `click()`, `hover()` or `type()`.
 
 ## Notes:
 
-* It might be necessary to increase the Jasmine timeout in order to get reliable test results.
-
 * Add your `resultsDir` folder to `.gitignore` in order to not spam git history.
 
 ## What to do when tests are failing
@@ -169,3 +97,7 @@ supported Puppeteer method like `click()`, `hover()` or `type()`.
   * **If yes**: Replace the reference shot in the `fixturesDir` folder with the belonging one in the `resultsDir` folder
     and delete the images in the `resultsDir` directory afterwards manually.
   * **If no**: Recheck your code and run the tests again, when you think you fixed it.
+
+## License
+
+- MIT

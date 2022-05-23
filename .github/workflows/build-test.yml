@@ -1,0 +1,37 @@
+on:
+  push:
+    branches:
+      - issue/*
+name: 'Build & Test'
+jobs:
+  build-test:
+    name: 'Build & Test'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+      - name: 'Cache node_modules'
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: 'Install'
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: ./docker/node/
+        with:
+          entrypoint: run-install
+      - name: 'Build'
+        uses: ./docker/node/
+        with:
+          entrypoint: run-build
+      - name: 'VRT Test'
+        uses: ./docker/node/
+        with:
+          entrypoint: run-test
+      - name: 'VRT Regression'
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: vrt-regression
+          path: ./tests/results

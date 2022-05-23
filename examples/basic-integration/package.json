@@ -1,14 +1,31 @@
 {
+  "name": "@porsche-design-system/visual-regression-tester-basic-integration",
+  "version": "0.0.0",
+  "description": "Example for basic integration of visual regression tester",
+  "keywords": [
+    "porsche",
+    "visual",
+    "regression",
+    "tester",
+    "basic",
+    "integration",
+    "example"
+  ],
+  "scope": "@porsche-design-system",
+  "author": "Dr. Ing. h.c. F. Porsche AG",
+  "license": "UNLICENSED",
+  "homepage": "https://designsystem.porsche.com",
+  "private": true,
   "scripts": {
     "start": "http-server -p 61422 -s",
     "test": "ts-node --project vrt/tsconfig.json node_modules/jasmine/bin/jasmine --config=vrt/jasmine.config.json"
   },
-  "dependencies": {
+  "devDependencies": {
     "@porsche-design-system/visual-regression-tester": "^4.0.0",
-    "http-server": "^0.12.3",
-    "jasmine": "^3.6.3",
-    "puppeteer": "^10.0.0",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.3.2"
+    "http-server": "^14.1.0",
+    "jasmine": "^4.1.0",
+    "puppeteer": "^14.1.1",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.6.4"
   }
 }
