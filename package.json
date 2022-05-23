@@ -23,7 +23,6 @@
     "README.md",
     "dist/"
   ],
-  "prettier": "@porsche-design-system/prettier-config",
   "scripts": {
     "start": "yarn build && http-server ./tests/pages -p 61423 -s",
     "build": "tsc",
