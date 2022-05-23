@@ -22,8 +22,6 @@ jobs:
       - name: 'Install'
         if: steps.cache.outputs.cache-hit != 'true'
         uses: ./docker/node/
-        env:
-          PORSCHE_NPM_REGISTRY_TOKEN: ${{ secrets.PORSCHE_NPM_REGISTRY_TOKEN }}
         with:
           entrypoint: run-install
       - name: 'Production Builds'
