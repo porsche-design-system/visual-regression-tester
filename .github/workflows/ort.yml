@@ -23,7 +23,7 @@ jobs:
         uses: ./docker/node/
         with:
           entrypoint: run-install
-      - name: 'Production Builds'
+      - name: 'Build'
         uses: ./docker/node/
         with:
           entrypoint: run-build
