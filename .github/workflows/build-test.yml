@@ -25,11 +25,6 @@ jobs:
         uses: ./docker/node/
         with:
           entrypoint: run-build
-      - name: 'Store NPM Artifacts'
-        uses: actions/upload-artifact@v3
-        with:
-          name: npm-artifacts
-          path: ./dist
       - name: 'Test'
         uses: ./docker/node/
         with:

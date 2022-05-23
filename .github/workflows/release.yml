@@ -25,15 +25,10 @@ jobs:
         uses: ./docker/node/
         with:
           entrypoint: run-build
-      - name: 'Store NPM Artifacts'
-        uses: actions/upload-artifact@v3
-        with:
-          name: npm-artifacts
-          path: ./dist
       - name: 'Publish NPM Package'
         uses: ./docker/node/
         env:
-          PORSCHE_NPM_REGISTRY_TOKEN: ${{ secrets.PORSCHE_NPM_REGISTRY_TOKEN }} #
+          PORSCHE_NPM_REGISTRY_TOKEN: ${{ secrets.PORSCHE_NPM_REGISTRY_TOKEN }}
           NPMJS_REGISTRY_TOKEN: ${{ secrets.NPMJS_REGISTRY_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
