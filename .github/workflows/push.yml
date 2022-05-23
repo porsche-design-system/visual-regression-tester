@@ -2,12 +2,12 @@ on:
   push
 name: 'Visual Regression Tester'
 jobs:
-  visual-regression-tester:
-    name: 'Visual Regression Tester'
+  build-test:
+    name: 'Build & Test'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: 'Install'
         uses: ./docker/node/
         env:
@@ -18,7 +18,35 @@ jobs:
         uses: ./docker/node/
         with:
           entrypoint: run-build
+      - name: 'Store NPM Artifacts'
+        uses: actions/upload-artifact@v3
+        with:
+          name: npm-artifacts
+          path: ./dist
       - name: 'Test'
         uses: ./docker/node/
         with:
           entrypoint: run-test
+  npm-release:
+    name: 'NPM Release'
+    needs:
+      - build-test
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+      - name: 'Restore NPM Artifacts'
+        uses: actions/download-artifact@v3
+        with:
+          name: npm-artifacts
+          path: ./dist
+      - name: 'Publish NPM Package'
+        uses: ./docker/node/
+        env:
+          PORSCHE_NPM_REGISTRY_TOKEN: ${{ secrets.PORSCHE_NPM_REGISTRY_TOKEN }} #
+          NPMJS_REGISTRY_TOKEN: ${{ secrets.NPMJS_REGISTRY_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          entrypoint: run-release-npm
+          args: .
