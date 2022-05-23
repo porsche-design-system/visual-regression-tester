@@ -19,6 +19,7 @@
   "files": [
     "CHANGELOG.md",
     "LICENSE",
+    "OSS_NOTICE",
     "README.md",
     "dist/"
   ],
