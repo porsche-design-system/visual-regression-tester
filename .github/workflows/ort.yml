@@ -8,6 +8,7 @@ jobs:
     name: 'ORT'
     runs-on: ubuntu-latest
     env:
+      OSO_PROJECT_NAME: porsche_visual_regression_tester
       OSO_AWS_ECR_REGISTRY: 215495424956.dkr.ecr.eu-central-1.amazonaws.com
     steps:
       - name: 'Checkout'
@@ -48,7 +49,7 @@ jobs:
 #      - name: "Send ORT Analyzer Result to OSO"
 #        run: |
 #          zip -j analyzer-result.zip ort/analyzer-result.yml
-#          curl -X POST https://${{ env.OSO_JENKINS_USER }}:${{ env.OSO_JENKINS_TOKEN }}@oso-ort-scan.aws.platform.porsche-preview.cloud/job/ort-porsche-scancode/buildWithParameters --form ort/analyzer-result.zip=@analyzer-result.zip --form ProjectName=porsche_visual_regression_tester --fail
+#          curl -X POST https://${{ env.OSO_JENKINS_USER }}:${{ env.OSO_JENKINS_TOKEN }}@oso-ort-scan.aws.platform.porsche-preview.cloud/job/ort-porsche-scancode/buildWithParameters --form ort/analyzer-result.zip=@analyzer-result.zip --form ProjectName=${{ env.OSO_PROJECT_NAME }} --fail
 #        shell: bash
 #        env:
 #          OSO_JENKINS_USER: ${{ secrets.OSO_JENKINS_USER }}
