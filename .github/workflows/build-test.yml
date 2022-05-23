@@ -25,7 +25,13 @@ jobs:
         uses: ./docker/node/
         with:
           entrypoint: run-build
-      - name: 'Test'
+      - name: 'VRT Test'
         uses: ./docker/node/
         with:
           entrypoint: run-test
+      - name: 'VRT Regression'
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: vrt-regression
+          path: ./tests/results
