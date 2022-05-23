@@ -1,7 +1,7 @@
 on:
   push
 #  schedule:
-#    - cron: "0 0 1 * *" # at 00:00 on day-of-month 1
+#    - cron: "0 0 1 1,7 *" # at 00:00 on day-of-month 1 in January and July
 name: 'OSS Review Toolkit'
 jobs:
   ort:
