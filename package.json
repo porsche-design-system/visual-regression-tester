@@ -17,6 +17,7 @@
   "main": "dist/visual-regression-tester.js",
   "types": "dist/visual-regression-tester.d.ts",
   "files": [
+    "CHANGELOG.md",
     "LICENSE",
     "README.md",
     "dist/"
