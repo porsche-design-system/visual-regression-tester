@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - master
-      - release/*
 name: 'Release Management'
 jobs:
   build:
