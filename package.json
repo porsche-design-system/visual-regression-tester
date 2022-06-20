@@ -1,6 +1,6 @@
 {
   "name": "@porsche-design-system/visual-regression-tester",
-  "version": "4.3.1",
+  "version": "4.3.2",
   "description": "Export functions to create visual regression tests.",
   "keywords": [
     "porsche",
