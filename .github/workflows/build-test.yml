@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - issue/*
+      - release/*
 name: 'Build & Test'
 jobs:
   build-test:
