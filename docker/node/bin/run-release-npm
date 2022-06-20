@@ -71,8 +71,9 @@ PACKAGE_VERSION=$(grep version "${PACKAGE_JSON}" | head -1 | awk -F= "{ print ${
 GIT_TAG_NAME="v${PACKAGE_VERSION}"
 
 if ! is_version_published; then
-  if publish_jfrog && publish_npmjs; then
-    add_git_tag
+  #if publish_jfrog && publish_npmjs; then
+  if publish_npmjs; then
+    # add_git_tag
     echo "Version \"${PACKAGE_VERSION}\" of \"${PACKAGE_NAME}\" published. 🎉"
   else
     echo "Publishing version \"${PACKAGE_VERSION}\" of \"${PACKAGE_NAME}\" failed. 😢"
