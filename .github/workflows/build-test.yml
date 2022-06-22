@@ -3,6 +3,7 @@ on:
     branches:
       - issue/*
       - release/*
+      - housekeeping/*
 name: 'Build & Test'
 jobs:
   build-test:
