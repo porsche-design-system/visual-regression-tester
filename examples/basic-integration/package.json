@@ -21,7 +21,7 @@
     "test": "ts-node --project vrt/tsconfig.json node_modules/jasmine/bin/jasmine --config=vrt/jasmine.config.json"
   },
   "devDependencies": {
-    "@porsche-design-system/visual-regression-tester": "^4.0.0",
+    "@porsche-design-system/visual-regression-tester": "^4.3.2",
     "http-server": "^14.1.0",
     "jasmine": "^4.1.0",
     "puppeteer": "^14.1.1",
