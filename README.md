@@ -23,7 +23,7 @@ yarn add @porsche-design-system/visual-regression-tester --dev
 __It's highly recommended executing the visual regression tester within a Docker container to get reliable tests
 results across any operating system and machine.__
 
-Check out the [Basic integration example](https://github.com/porscheui/porsche-visual-regression-tester/tree/master/examples/basic-integration) for an example how to get the Visual Regression Tester up and running.
+Check out the [Basic integration example](https://github.com/porsche-design-system/porsche-visual-regression-tester/tree/master/examples/basic-integration) for an example how to get the Visual Regression Tester up and running.
 
 ### API
 
@@ -35,7 +35,7 @@ The constructor expects two parameters:
 * `options: VisualRegressionTestOptions` (_optional_)
 
 Browser should be a [Puppeteer Browser instance](https://github.com/GoogleChrome/puppeteer/blob/v1.9.0/docs/api.md#class-browser).
-Check the basic integration example for [how to create a Puppeteer browser](https://github.com/porscheui/porsche-visual-regression-tester/blob/master/examples/basic-integration/vrt/example-test.spec.ts#L19).
+Check the basic integration example for [how to create a Puppeteer browser](https://github.com/porsche-design-system/porsche-visual-regression-tester/blob/master/examples/basic-integration/vrt/example-test.spec.ts#L19).
 
 #### test() Method
 
