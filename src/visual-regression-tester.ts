@@ -129,13 +129,7 @@ export class VisualRegressionTester {
 
       if (fs.existsSync(paths.reference)) {
         const fixture = sharp(path.resolve(paths.reference));
-        let regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors);
-
-        // TODO: make it configurable by `retries` option
-        if (regression) {
-          console.log('Regression occured, retry for viewport:', viewport);
-          regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors); // try one more time
-        }
+        const regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors);
 
         if (regression) {
           fs.mkdirSync(path.resolve(this.options.resultsDir), { recursive: true });
