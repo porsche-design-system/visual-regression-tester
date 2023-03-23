@@ -133,6 +133,7 @@ export class VisualRegressionTester {
 
         // TODO: make it configurable by `retries` option
         if (regression) {
+          console.log('Regression occured, retry for viewport:', viewport);
           regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors); // try one more time
         }
 
