@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { BoundingBox, Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
+import { Browser, ClickOptions, ElementHandle, Page, PuppeteerLifeCycleEvent } from 'puppeteer';
 import sharp from 'sharp';
 import pixelmatch from 'pixelmatch';
 
@@ -28,7 +28,7 @@ type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 type WritableDomRect = Writeable<Omit<DOMRect, 'toJson'>>;
 
 export class VisualRegressionTester {
-  private options: VisualRegressionTestOptions = {
+  private readonly options: VisualRegressionTestOptions = {
     viewports: [320, 480, 760, 1000, 1300, 1760],
     deviceScaleFactor: 1,
     fixturesDir: 'vrt/fixtures',
@@ -129,7 +129,12 @@ export class VisualRegressionTester {
 
       if (fs.existsSync(paths.reference)) {
         const fixture = sharp(path.resolve(paths.reference));
-        const regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors);
+        let regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors);
+
+        // TODO: make it configurable by `retries` option
+        if (regression) {
+          regression = await this.compareSnapshots(fixture, opts.elementSelector, opts.maskSelectors); // try one more time
+        }
 
         if (regression) {
           fs.mkdirSync(path.resolve(this.options.resultsDir), { recursive: true });
@@ -139,6 +144,7 @@ export class VisualRegressionTester {
           await regression.diff.toFile(paths.diff);
         }
       } else {
+        errors.push(viewport); // test execution shall fail, in case no fixture exists
         const reference = await this.createSnapshot(opts.elementSelector, opts.maskSelectors);
         await reference.toFile(paths.reference);
       }
@@ -203,12 +209,10 @@ export class VisualRegressionTester {
 
   private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<sharp.Sharp> {
     const buffer = await (elementSelector
-      ? ((
-          await this.page.$(elementSelector)
-        ).screenshot({
+      ? (await (await this.page.$(elementSelector)).screenshot({
           captureBeyondViewport: false,
         }) as unknown as Promise<string>)
-      : (this.page.screenshot({
+      : (await this.page.screenshot({
           fullPage: true,
           captureBeyondViewport: false,
         }) as unknown as Promise<string>));
