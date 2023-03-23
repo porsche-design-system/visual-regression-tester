@@ -210,14 +210,14 @@ export class VisualRegressionTester {
   private async createSnapshot(elementSelector: string, maskSelectors: string[]): Promise<sharp.Sharp> {
     const buffer = await (elementSelector
       ? ((
-        await this.page.$(elementSelector)
-      ).screenshot({
-        captureBeyondViewport: false,
-      }) as unknown as Promise<string>)
+          await this.page.$(elementSelector)
+        ).screenshot({
+          captureBeyondViewport: false,
+        }) as unknown as Promise<string>)
       : (this.page.screenshot({
-        fullPage: true,
-        captureBeyondViewport: false,
-      }) as unknown as Promise<string>));
+          fullPage: true,
+          captureBeyondViewport: false,
+        }) as unknown as Promise<string>));
 
     const rawImage = sharp(buffer);
 
