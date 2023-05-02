@@ -70,6 +70,25 @@ describe('Visual-Regression-Test Tester', () => {
     ).toBeFalsy();
   });
 
+  it('should have no visual regression when compared with masked test page with disabled javascript and elementSelector', async () => {
+    expect(
+      await visualRegressionTester.test(
+        'test-page-masked-original',
+        async () => {
+          const page = visualRegressionTester.getPage();
+
+          const cdpSession = await page.target().createCDPSession();
+          await cdpSession.send('Emulation.setScriptExecutionDisabled', {
+            value: true,
+          });
+
+          await visualRegressionTester.goTo('/test-page-original.html');
+        },
+        { elementSelector: 'p' }
+      )
+    ).toBeFalsy();
+  });
+
   it('should have no visual regression for content within scrollable area and mask deeper nested elements', async () => {
     expect(
       await visualRegressionTester.test(
